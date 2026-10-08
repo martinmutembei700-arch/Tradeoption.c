@@ -91,9 +91,7 @@ margin:1%;
 border-radius:8px
 }
 
-.stock b{
-font-size:15px
-}
+.stock b{font-size:15px}
 
 .stockPrice{
 font-weight:bold;
@@ -107,9 +105,7 @@ align-items:center;
 gap:10px
 }
 
-.chartHeader select{
-width:48%
-}
+.chartHeader select{width:48%}
 
 .price{
 text-align:center;
@@ -186,13 +182,7 @@ font-size:12px
 
 @media(max-width:600px){
 
-.account{
-grid-template-columns:1fr 1fr
-}
-
-.stock{
-width:47%
-}
+.stock{width:47%}
 
 .ohlc{
 grid-template-columns:1fr 1fr
@@ -218,8 +208,6 @@ width:100%
 </header>
 
 <main>
-
-<!-- ACCOUNT -->
 
 <div class="card">
 
@@ -252,8 +240,6 @@ width:100%
 </div>
 
 
-<!-- STOCKS -->
-
 <div class="card">
 
 <h2>Markets</h2>
@@ -262,8 +248,6 @@ width:100%
 
 </div>
 
-
-<!-- CHART -->
 
 <div class="card">
 
@@ -313,16 +297,12 @@ Close
 </div>
 
 <div class="chartbox">
-
 <canvas id="chart"></canvas>
-
 </div>
 
 <p class="small">
 Simulated market • New candle every 5 seconds
 </p>
-
-<!-- DIRECT CHART TRADING -->
 
 <div class="chartButtons">
 
@@ -338,8 +318,6 @@ SELL
 
 </div>
 
-
-<!-- PLACE TRADE -->
 
 <div class="card">
 
@@ -374,8 +352,6 @@ SELL
 </div>
 
 
-<!-- PORTFOLIO -->
-
 <div class="card">
 
 <h2>Portfolio</h2>
@@ -387,8 +363,6 @@ No positions
 </div>
 
 
-<!-- HISTORY -->
-
 <div class="card">
 
 <h2>Trade History</h2>
@@ -399,8 +373,6 @@ No trades
 
 </div>
 
-
-<!-- RESET -->
 
 <div class="card">
 
@@ -415,31 +387,23 @@ Reset Account to $10,000
 
 <script>
 
-/* =========================
-   STARTING PRICES
-========================= */
+/* STARTING PRICES */
 
 const startingPrices={
-
 AAPL:256.77,
 MSFT:521.90,
 NVDA:180.24,
 TSLA:447.96,
 AMZN:232.11,
 GOOGL:246.85
-
 };
 
 
-/* =========================
-   ACCOUNT
-========================= */
+/* ACCOUNT */
 
 let cash=10000;
 
-let prices={
-...startingPrices
-};
+let prices={...startingPrices};
 
 let holdings={};
 
@@ -448,14 +412,19 @@ let trades=[];
 let candles={};
 
 
-/* =========================
-   CREATE CANDLES
-========================= */
+/*
+Cost basis keeps track of the
+actual BUY price of shares.
+*/
+
+let costBasis={};
+
+
+/* CREATE CANDLES */
 
 function createInitialCandles(price){
 
 let list=[];
-
 let current=price;
 
 for(let i=0;i<35;i++){
@@ -480,12 +449,10 @@ close
 )-Math.random()*1.2;
 
 list.push({
-
 open:open,
 high:high,
 low:low,
 close:close
-
 });
 
 current=close;
@@ -493,7 +460,6 @@ current=close;
 }
 
 return list;
-
 }
 
 
@@ -518,9 +484,7 @@ candles[s].length-1
 }
 
 
-/* =========================
-   MONEY
-========================= */
+/* MONEY */
 
 function money(n){
 
@@ -529,9 +493,92 @@ return Number(n).toFixed(2);
 }
 
 
-/* =========================
-   ACCOUNT RENDER
-========================= */
+/*
+FIX OLD TRADES
+
+This converts old SELL records that
+had NaN into the correct P/L.
+*/
+
+function repairOldTrades(){
+
+let buyLots={};
+
+for(let s in prices){
+buyLots[s]=[];
+}
+
+
+trades.forEach(t=>{
+
+if(t.action==="BUY"){
+
+if(!buyLots[t.symbol]){
+buyLots[t.symbol]=[];
+}
+
+for(let i=0;i<t.shares;i++){
+
+buyLots[t.symbol].push(
+Number(t.price)
+);
+
+}
+
+}
+
+else if(t.action==="SELL"){
+
+if(!buyLots[t.symbol]){
+buyLots[t.symbol]=[];
+}
+
+let totalCost=0;
+let sold=0;
+
+for(let i=0;i<t.shares;i++){
+
+let buyPrice=
+buyLots[t.symbol].shift();
+
+if(
+Number.isFinite(buyPrice)
+){
+
+totalCost+=buyPrice;
+sold++;
+
+}
+
+}
+
+
+if(
+!Number.isFinite(Number(t.pl))
+){
+
+if(sold>0){
+
+t.pl=
+(Number(t.price)*sold)-
+totalCost;
+
+}else{
+
+t.pl=0;
+
+}
+
+}
+
+}
+
+});
+
+}
+
+
+/* RENDER */
 
 function render(){
 
@@ -541,7 +588,6 @@ money(cash);
 
 
 let stockValue=0;
-
 let positionCount=0;
 
 
@@ -600,8 +646,7 @@ $${money(prices[s])}
 
 
 document.getElementById("stocks")
-.innerHTML=
-stocks;
+.innerHTML=stocks;
 
 
 /* PORTFOLIO */
@@ -616,6 +661,7 @@ holdings[s];
 
 let value=
 shares*prices[s];
+
 
 portfolioHTML+=`
 
@@ -654,16 +700,35 @@ trades
 .reverse()
 .forEach(t=>{
 
-let pl="";
+let plText="";
+
 
 if(t.action==="SELL"){
 
-pl=
-`<span class="profit">
-Realized P/L: $${money(t.pl)}
-</span>`;
+let pl=
+Number(t.pl);
+
+if(!Number.isFinite(pl)){
+pl=0;
+}
+
+let sign=
+pl>=0?"+":"";
+
+
+plText=`
+
+<span class="profit">
+
+Realized P/L:
+$${sign}${money(pl)}
+
+</span>
+
+`;
 
 }
+
 
 historyHTML+=`
 
@@ -676,7 +741,7 @@ ${t.symbol}
 
 <br>
 
-${pl}
+${plText}
 
 </div>
 
@@ -698,9 +763,7 @@ drawChart();
 }
 
 
-/* =========================
-   NORMAL TRADE
-========================= */
+/* TRADE */
 
 function trade(action){
 
@@ -723,9 +786,7 @@ shares
 }
 
 
-/* =========================
-   CHART TRADE
-========================= */
+/* CHART TRADE */
 
 function chartTrade(action){
 
@@ -739,6 +800,10 @@ document.getElementById("shares")
 .value
 )||1;
 
+document.getElementById("symbol")
+.value=
+symbol;
+
 executeTrade(
 action,
 symbol,
@@ -746,18 +811,12 @@ shares
 );
 
 
-/* Keep symbol selectors together */
-
-document.getElementById("symbol")
-.value=
-symbol;
+/* CHART TRADE DONE */
 
 }
 
 
-/* =========================
-   EXECUTE TRADE
-========================= */
+/* EXECUTE TRADE */
 
 function executeTrade(
 action,
@@ -769,7 +828,7 @@ let price=
 prices[symbol];
 
 
-if(shares<1){
+if(!Number.isFinite(shares)||shares<1){
 
 alert(
 "Enter at least 1 share"
@@ -784,9 +843,7 @@ return;
 
 if(action==="BUY"){
 
-if(
-price*shares>cash
-){
+if(price*shares>cash){
 
 alert(
 "Not enough cash"
@@ -806,16 +863,29 @@ holdings[symbol]=
 shares;
 
 
+/*
+Add cost basis
+*/
+
+if(!costBasis[symbol]){
+costBasis[symbol]=[];
+}
+
+for(let i=0;i<shares;i++){
+
+costBasis[symbol].push(
+price
+);
+
+}
+
+
 trades.push({
 
 action:"BUY",
-
 symbol:symbol,
-
 shares:shares,
-
 price:price,
-
 pl:0
 
 });
@@ -841,42 +911,61 @@ return;
 }
 
 
-/*
-Calculate average BUY price
-*/
-
-let buys=
-trades.filter(t=>
-t.symbol===symbol&&
-t.action==="BUY"
-);
-
-
-let totalShares=0;
-
 let totalCost=0;
 
 
-buys.forEach(t=>{
+/*
+Take the oldest BUY
+price for each sold share.
+*/
 
-totalShares+=
-t.shares;
+for(let i=0;i<shares;i++){
+
+let buyPrice;
+
+
+if(
+costBasis[symbol]&&
+costBasis[symbol].length
+){
+
+buyPrice=
+costBasis[symbol].shift();
+
+}else{
+
+/*
+Fallback for old accounts.
+Find a valid BUY price.
+*/
+
+let oldBuy=
+trades
+.filter(t=>
+t.symbol===symbol&&
+t.action==="BUY"&&
+Number.isFinite(
+Number(t.price)
+)
+)
+[0];
+
+buyPrice=
+oldBuy?
+Number(oldBuy.price):
+price;
+
+}
 
 totalCost+=
-t.shares*t.price;
+buyPrice;
 
-});
-
-
-let averageBuy=
-totalShares?
-totalCost/totalShares:
-price;
+}
 
 
 let pl=
-(price-averageBuy)*
-shares;
+(price*shares)-
+totalCost;
 
 
 cash+=
@@ -890,6 +979,8 @@ shares;
 if(holdings[symbol]===0){
 
 delete holdings[symbol];
+
+delete costBasis[symbol];
 
 }
 
@@ -916,26 +1007,17 @@ render();
 }
 
 
-/* =========================
-   MARKET UPDATE
-========================= */
+/* MARKET UPDATE */
 
 function updatePrices(){
 
 for(let s in prices){
 
-let oldPrice=
-prices[s];
-
 let open=
-oldPrice;
-
-
-/* Random market movement */
+prices[s];
 
 let movement=
 (Math.random()-.5)*3;
-
 
 let close=
 Math.max(
@@ -943,31 +1025,24 @@ Math.max(
 open+movement
 );
 
-
 let high=
 Math.max(
 open,
 close
-)+
-Math.random()*1.2;
-
+)+Math.random()*1.2;
 
 let low=
 Math.min(
 open,
 close
-)-
-Math.random()*1.2;
+)-Math.random()*1.2;
 
 
 candles[s].push({
 
 open:open,
-
 high:high,
-
 low:low,
-
 close:close
 
 });
@@ -990,9 +1065,7 @@ render();
 }
 
 
-/* =========================
-   DRAW CANDLESTICK CHART
-========================= */
+/* DRAW CHART */
 
 function drawChart(){
 
@@ -1014,9 +1087,7 @@ candles[symbol];
 
 
 if(!data||!data.length){
-
 return;
-
 }
 
 
@@ -1039,19 +1110,13 @@ ctx.setTransform(
 
 
 let w=width;
-
 let h=height;
 
 
 ctx.clearRect(
-0,
-0,
-w,
-h
+0,0,w,h
 );
 
-
-/* MIN/MAX */
 
 let min=
 Math.min(
@@ -1063,28 +1128,19 @@ Math.max(
 ...data.map(c=>c.high)
 );
 
-
 let range=
 max-min||1;
 
 
-min-=
-range*.08;
+min-=range*.08;
+max+=range*.08;
 
-max+=
-range*.08;
-
-
-range=
-max-min;
+range=max-min;
 
 
 let left=10;
-
 let right=65;
-
 let top=20;
-
 let bottom=35;
 
 
@@ -1097,9 +1153,7 @@ h-top-bottom;
 
 /* GRID */
 
-ctx.strokeStyle=
-"#e5e7eb";
-
+ctx.strokeStyle="#e5e7eb";
 ctx.lineWidth=1;
 
 
@@ -1112,30 +1166,18 @@ chartHeight/5*i;
 
 ctx.beginPath();
 
-ctx.moveTo(
-left,
-y
-);
-
-ctx.lineTo(
-w-right,
-y
-);
+ctx.moveTo(left,y);
+ctx.lineTo(w-right,y);
 
 ctx.stroke();
 
 
 let price=
-max-
-range/5*i;
+max-range/5*i;
 
 
-ctx.fillStyle=
-"#64748b";
-
-ctx.font=
-"11px Arial";
-
+ctx.fillStyle="#64748b";
+ctx.font="11px Arial";
 
 ctx.fillText(
 "$"+money(price),
@@ -1155,31 +1197,18 @@ left+
 chartWidth/4*i;
 
 
-ctx.strokeStyle=
-"#eeeeee";
-
+ctx.strokeStyle="#eeeeee";
 
 ctx.beginPath();
 
-ctx.moveTo(
-x,
-top
-);
-
-ctx.lineTo(
-x,
-h-bottom
-);
+ctx.moveTo(x,top);
+ctx.lineTo(x,h-bottom);
 
 ctx.stroke();
 
 
-ctx.fillStyle=
-"#64748b";
-
-ctx.font=
-"10px Arial";
-
+ctx.fillStyle="#64748b";
+ctx.font="10px Arial";
 
 ctx.fillText(
 (i*10)+"s",
@@ -1190,16 +1219,13 @@ h-10
 }
 
 
-/* CANDLE WIDTH */
+/* CANDLES */
 
 let candleWidth=
 chartWidth/data.length;
 
 
-/* DRAW CANDLES */
-
-data.forEach(
-(c,i)=>{
+data.forEach((c,i)=>{
 
 let x=
 left+
@@ -1239,7 +1265,7 @@ let rising=
 c.close>=c.open;
 
 
-let candleColor=
+let color=
 rising?
 "#16a34a":
 "#dc2626";
@@ -1247,23 +1273,13 @@ rising?
 
 /* WICK */
 
-ctx.strokeStyle=
-candleColor;
-
+ctx.strokeStyle=color;
 ctx.lineWidth=1.5;
-
 
 ctx.beginPath();
 
-ctx.moveTo(
-x,
-yHigh
-);
-
-ctx.lineTo(
-x,
-yLow
-);
+ctx.moveTo(x,yHigh);
+ctx.lineTo(x,yLow);
 
 ctx.stroke();
 
@@ -1284,7 +1300,6 @@ yClose-yOpen
 )
 );
 
-
 let bodyWidth=
 Math.max(
 4,
@@ -1292,9 +1307,7 @@ candleWidth*.65
 );
 
 
-ctx.fillStyle=
-candleColor;
-
+ctx.fillStyle=color;
 
 ctx.fillRect(
 x-bodyWidth/2,
@@ -1322,12 +1335,8 @@ range*
 chartHeight;
 
 
-let first=
-data[0].open;
-
-
 let rising=
-current>=first;
+current>=data[0].open;
 
 
 let color=
@@ -1336,32 +1345,17 @@ rising?
 "#dc2626";
 
 
-/* PRICE LINE */
-
 ctx.strokeStyle=color;
-
 ctx.lineWidth=1;
 
-ctx.setLineDash([
-5,
-5
-]);
-
+ctx.setLineDash([5,5]);
 
 ctx.beginPath();
 
-ctx.moveTo(
-left,
-currentY
-);
-
-ctx.lineTo(
-w-right,
-currentY
-);
+ctx.moveTo(left,currentY);
+ctx.lineTo(w-right,currentY);
 
 ctx.stroke();
-
 
 ctx.setLineDash([]);
 
@@ -1370,7 +1364,6 @@ ctx.setLineDash([]);
 
 ctx.fillStyle=color;
 
-
 ctx.fillRect(
 w-right,
 currentY-10,
@@ -1378,12 +1371,8 @@ currentY-10,
 20
 );
 
-
 ctx.fillStyle="white";
-
-ctx.font=
-"bold 11px Arial";
-
+ctx.font="bold 11px Arial";
 
 ctx.fillText(
 "$"+money(current),
@@ -1392,17 +1381,15 @@ currentY+4
 );
 
 
-/* PRICE ABOVE CHART */
+/* PRICE */
 
 let priceElement=
 document.getElementById(
 "chartPrice"
 );
 
-
 priceElement.textContent=
 "$"+money(current);
-
 
 priceElement.className=
 "price "+
@@ -1416,18 +1403,15 @@ document.getElementById(
 ).textContent=
 "$"+money(last.open);
 
-
 document.getElementById(
 "highPrice"
 ).textContent=
 "$"+money(last.high);
 
-
 document.getElementById(
 "lowPrice"
 ).textContent=
 "$"+money(last.low);
-
 
 document.getElementById(
 "closePrice"
@@ -1437,14 +1421,13 @@ document.getElementById(
 }
 
 
-/* =========================
-   SAVE
-========================= */
+/* SAVE */
 
 function save(){
 
 localStorage.setItem(
 "martinTrade",
+
 JSON.stringify({
 
 cash:cash,
@@ -1455,17 +1438,18 @@ trades:trades,
 
 prices:prices,
 
-candles:candles
+candles:candles,
+
+costBasis:costBasis
 
 })
+
 );
 
 }
 
 
-/* =========================
-   LOAD
-========================= */
+/* LOAD */
 
 function load(){
 
@@ -1484,18 +1468,19 @@ JSON.parse(saved);
 
 
 cash=
-data.cash??
+Number.isFinite(
+Number(data.cash)
+)?
+Number(data.cash):
 10000;
 
 
 holdings=
-data.holdings||
-{};
+data.holdings||{};
 
 
 trades=
-data.trades||
-[];
+data.trades||[];
 
 
 prices=
@@ -1504,9 +1489,23 @@ data.prices||
 
 
 candles=
-data.candles||
-{};
+data.candles||{};
 
+
+costBasis=
+data.costBasis||{};
+
+
+/*
+Repair old trades first.
+*/
+
+repairOldTrades();
+
+
+/*
+Create missing candle data.
+*/
 
 for(let s in prices){
 
@@ -1524,6 +1523,87 @@ prices[s]
 
 }
 
+
+/*
+Rebuild cost basis for old
+accounts that don't have it.
+*/
+
+for(let s in holdings){
+
+if(
+!costBasis[s]||
+!costBasis[s].length
+){
+
+costBasis[s]=[];
+
+let buys=
+trades.filter(t=>
+t.symbol===s&&
+t.action==="BUY"
+);
+
+let sells=
+trades.filter(t=>
+t.symbol===s&&
+t.action==="SELL"
+);
+
+
+let bought=0;
+let sold=0;
+
+buys.forEach(t=>{
+bought+=Number(t.shares)||0;
+});
+
+
+sells.forEach(t=>{
+sold+=Number(t.shares)||0;
+});
+
+
+let remaining=
+Math.max(
+0,
+bought-sold
+);
+
+
+/*
+Use the most recent valid BUY
+price for remaining shares.
+*/
+
+let lastBuy=
+buys
+.filter(t=>
+Number.isFinite(
+Number(t.price)
+)
+)
+.slice(-1)[0];
+
+
+let basis=
+lastBuy?
+Number(lastBuy.price):
+prices[s];
+
+
+for(let i=0;i<remaining;i++){
+
+costBasis[s].push(
+basis
+);
+
+}
+
+}
+
+}
+
 }catch(e){
 
 cash=10000;
@@ -1536,24 +1616,22 @@ prices={
 ...startingPrices
 };
 
+costBasis={};
+
+initializeCandles();
+
+}
+
+}else{
+
 initializeCandles();
 
 }
 
 }
 
-else{
 
-initializeCandles();
-
-}
-
-}
-
-
-/* =========================
-   COMPLETE RESET
-========================= */
+/* RESET */
 
 function resetAccount(){
 
@@ -1567,12 +1645,13 @@ localStorage.removeItem(
 "martinTrade"
 );
 
-
 cash=10000;
 
 holdings={};
 
 trades=[];
+
+costBasis={};
 
 prices={
 ...startingPrices
@@ -1594,7 +1673,7 @@ load();
 render();
 
 
-/* NEW CANDLE EVERY 5 SECONDS */
+/* MARKET UPDATE */
 
 setInterval(
 updatePrices,
@@ -1604,4 +1683,4 @@ updatePrices,
 </script>
 
 </body>
- </html>
+   </html>
