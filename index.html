@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -7,18 +7,90 @@
 
 <style>
 *{box-sizing:border-box}
-body{margin:0;font-family:Arial;background:#f4f6f8;color:#172033}
-header{background:#111827;color:white;padding:18px;text-align:center}
-main{max-width:750px;margin:auto;padding:14px}
-.card{background:white;padding:16px;margin:12px 0;border-radius:12px;box-shadow:0 2px 8px #ddd}
-input,select,button{width:100%;padding:12px;margin:6px 0;border-radius:7px;border:1px solid #ccc}
-button{border:0;color:white;font-weight:bold}
-.buy{background:#16a34a}.sell{background:#dc2626}.reset{background:#555}
-.stock{display:inline-block;width:44%;padding:9px}
-.chartbox{position:relative}
-canvas{width:100%;height:300px;border:1px solid #ddd;border-radius:8px;background:#fff}
-.price{text-align:center;font-size:22px;font-weight:bold;margin:5px}
-.up{color:#16a34a}.down{color:#dc2626}
+
+body{
+ margin:0;
+ font-family:Arial,sans-serif;
+ background:#f4f6f8;
+ color:#172033
+}
+
+header{
+ background:#111827;
+ color:white;
+ padding:18px;
+ text-align:center
+}
+
+main{
+ max-width:800px;
+ margin:auto;
+ padding:14px
+}
+
+.card{
+ background:white;
+ padding:16px;
+ margin:12px 0;
+ border-radius:12px;
+ box-shadow:0 2px 8px #ddd
+}
+
+input,select,button{
+ width:100%;
+ padding:12px;
+ margin:6px 0;
+ border-radius:7px;
+ border:1px solid #ccc;
+ font-size:15px
+}
+
+button{
+ border:0;
+ color:white;
+ font-weight:bold;
+ cursor:pointer
+}
+
+.buy{background:#16a34a}
+.sell{background:#dc2626}
+.reset{background:#555}
+
+.stock{
+ display:inline-block;
+ width:44%;
+ padding:9px
+}
+
+.price{
+ text-align:center;
+ font-size:24px;
+ font-weight:bold;
+ margin:8px
+}
+
+.up{color:#16a34a}
+.down{color:#dc2626}
+
+.chartbox{
+ width:100%;
+ overflow:hidden
+}
+
+canvas{
+ display:block;
+ width:100%;
+ height:350px;
+ border:1px solid #ddd;
+ border-radius:8px;
+ background:white
+}
+
+.small{
+ color:#6b7280;
+ font-size:13px;
+ text-align:center
+}
 </style>
 </head>
 
@@ -33,17 +105,21 @@ canvas{width:100%;height:300px;border:1px solid #ddd;border-radius:8px;backgroun
 
 <div class="card">
 <h2>Account</h2>
+
 <p>Cash: $<span id="cash">10000.00</span></p>
 <p>Portfolio: $<span id="portfolio">10000.00</span></p>
 <p>Total P/L: $<span id="profit">0.00</span></p>
 </div>
+
 
 <div class="card">
 <h2>Stocks</h2>
 <div id="stocks"></div>
 </div>
 
+
 <div class="card">
+
 <h2>Market Chart</h2>
 
 <select id="chartStock" onchange="drawChart()">
@@ -61,9 +137,15 @@ canvas{width:100%;height:300px;border:1px solid #ddd;border-radius:8px;backgroun
 <canvas id="chart"></canvas>
 </div>
 
+<p class="small">
+New simulated candle every 5 seconds
+</p>
+
 </div>
 
+
 <div class="card">
+
 <h2>Place Trade</h2>
 
 <select id="symbol">
@@ -75,33 +157,62 @@ canvas{width:100%;height:300px;border:1px solid #ddd;border-radius:8px;backgroun
 <option>GOOGL</option>
 </select>
 
-<input id="shares" type="number" min="1" value="1">
+<input
+ id="shares"
+ type="number"
+ min="1"
+ value="1"
+>
 
-<button class="buy" onclick="trade('BUY')">BUY</button>
-<button class="sell" onclick="trade('SELL')">SELL</button>
+<button class="buy" onclick="trade('BUY')">
+BUY
+</button>
+
+<button class="sell" onclick="trade('SELL')">
+SELL
+</button>
+
 </div>
 
+
 <div class="card">
+
 <h2>Portfolio</h2>
-<div id="portfolioList">No positions</div>
+
+<div id="portfolioList">
+No positions
 </div>
 
+</div>
+
+
 <div class="card">
+
 <h2>Trade History</h2>
-<div id="history">No trades</div>
+
+<div id="history">
+No trades
 </div>
 
+</div>
+
+
 <div class="card">
-<button class="reset" onclick="resetAccount()">Reset Account</button>
+
+<button class="reset" onclick="resetAccount()">
+Reset Account
+</button>
+
 </div>
 
 </main>
+
 
 <script>
 
 let cash=10000;
 
-let prices={
+const startingPrices={
  AAPL:256.77,
  MSFT:521.90,
  NVDA:180.24,
@@ -110,303 +221,908 @@ let prices={
  GOOGL:246.85
 };
 
+let prices={...startingPrices};
+
 let holdings={};
+
 let trades=[];
-let history={};
+
+
+/*
+Each stock now stores candles:
+
+{
+ open,
+ high,
+ low,
+ close
+}
+*/
+
+let candles={};
+
+
+function createInitialCandles(price){
+
+ let list=[];
+
+ let current=price;
+
+ for(let i=0;i<30;i++){
+
+  let open=current;
+
+  let change=(Math.random()-.5)*2;
+
+  let close=Math.max(
+   1,
+   open+change
+  );
+
+  let high=Math.max(
+   open,
+   close
+  )+Math.random()*0.8;
+
+  let low=Math.min(
+   open,
+   close
+  )-Math.random()*0.8;
+
+  list.push({
+   open:open,
+   high:high,
+   low:low,
+   close:close
+  });
+
+  current=close;
+ }
+
+ return list;
+}
+
 
 for(let s in prices){
- history[s]=[prices[s]];
+
+ candles[s]=createInitialCandles(
+  prices[s]
+ );
+
+ prices[s]=candles[s][
+  candles[s].length-1
+ ].close;
 }
+
 
 function money(n){
  return Number(n).toFixed(2);
 }
 
+
 function render(){
 
- document.getElementById("cash").textContent=money(cash);
+ document.getElementById("cash")
+ .textContent=money(cash);
+
 
  let value=0;
 
  for(let s in holdings){
-   value+=holdings[s]*prices[s];
+
+  value+=
+   holdings[s]*
+   prices[s];
  }
+
 
  let portfolio=cash+value;
 
- document.getElementById("portfolio").textContent=money(portfolio);
- document.getElementById("profit").textContent=money(portfolio-10000);
+
+ document.getElementById("portfolio")
+ .textContent=money(portfolio);
+
+
+ document.getElementById("profit")
+ .textContent=
+ money(portfolio-10000);
+
 
  let stocks="";
 
+
  for(let s in prices){
-   stocks+=`
-   <div class="stock">
+
+  stocks+=`
+
+  <div class="stock">
+
    <b>${s}</b><br>
+
    $${money(prices[s])}
-   </div>`;
+
+  </div>
+
+  `;
  }
 
- document.getElementById("stocks").innerHTML=stocks;
+
+ document.getElementById("stocks")
+ .innerHTML=stocks;
+
 
  let p="";
 
+
  for(let s in holdings){
-   p+=`${s}: ${holdings[s]} shares<br>`;
+
+  p+=
+   `${s}: ${holdings[s]} shares<br>`;
+
  }
 
- document.getElementById("portfolioList").innerHTML=
+
+ document.getElementById("portfolioList")
+ .innerHTML=
  p||"No positions";
+
 
  let h="";
 
- trades.slice().reverse().forEach(t=>{
-   h+=`${t.action} ${t.shares} ${t.symbol} @ $${money(t.price)}<br>`;
+
+ trades
+ .slice()
+ .reverse()
+ .forEach(t=>{
+
+  h+=`
+
+  ${t.action}
+  ${t.shares}
+  ${t.symbol}
+  @ $${money(t.price)}
+  <br>
+
+  `;
+
  });
 
- document.getElementById("history").innerHTML=
+
+ document.getElementById("history")
+ .innerHTML=
  h||"No trades";
 
+
  save();
+
  drawChart();
 }
 
+
+
 function trade(action){
 
- let symbol=document.getElementById("symbol").value;
- let shares=Number(document.getElementById("shares").value);
- let price=prices[symbol];
+ let symbol=
+  document.getElementById("symbol")
+  .value;
+
+ let shares=
+  Number(
+   document.getElementById("shares")
+   .value
+  );
+
+ let price=
+  prices[symbol];
+
 
  if(shares<1){
-   alert("Enter at least 1 share");
-   return;
+
+  alert(
+   "Enter at least 1 share"
+  );
+
+  return;
  }
+
 
  if(action==="BUY"){
 
-   if(price*shares>cash){
-     alert("Not enough cash");
-     return;
-   }
+  if(price*shares>cash){
 
-   cash-=price*shares;
-   holdings[symbol]=(holdings[symbol]||0)+shares;
+   alert(
+    "Not enough cash"
+   );
 
- }else{
+   return;
+  }
 
-   if(!holdings[symbol]||holdings[symbol]<shares){
-     alert("You don't own enough shares");
-     return;
-   }
 
-   cash+=price*shares;
-   holdings[symbol]-=shares;
+  cash-=
+   price*shares;
 
-   if(holdings[symbol]===0){
-     delete holdings[symbol];
-   }
+
+  holdings[symbol]=
+   (holdings[symbol]||0)+shares;
+
  }
 
+
+ else{
+
+  if(
+   !holdings[symbol]||
+   holdings[symbol]<shares
+  ){
+
+   alert(
+    "You don't own enough shares"
+   );
+
+   return;
+  }
+
+
+  cash+=
+   price*shares;
+
+
+  holdings[symbol]-=
+   shares;
+
+
+  if(holdings[symbol]===0){
+
+   delete holdings[symbol];
+
+  }
+
+ }
+
+
  trades.push({
-   action:action,
-   symbol:symbol,
-   shares:shares,
-   price:price
+
+  action:action,
+
+  symbol:symbol,
+
+  shares:shares,
+
+  price:price
+
  });
+
 
  render();
 }
+
+
+
+/*
+Create one new candle
+every 5 seconds.
+*/
 
 function updatePrices(){
 
  for(let s in prices){
 
-   let old=prices[s];
+  let oldPrice=
+   prices[s];
 
-   prices[s]=Math.max(
-     1,
-     prices[s]+(Math.random()-.5)*2
+
+  let open=
+   oldPrice;
+
+
+  let movement=
+   (Math.random()-.5)*3;
+
+
+  let close=
+   Math.max(
+    1,
+    open+movement
    );
 
-   history[s].push(prices[s]);
 
-   if(history[s].length>50){
-     history[s].shift();
-   }
+  let high=
+   Math.max(
+    open,
+    close
+   )+
+   Math.random()*1.2;
+
+
+  let low=
+   Math.min(
+    open,
+    close
+   )-
+   Math.random()*1.2;
+
+
+  candles[s].push({
+
+   open:open,
+
+   high:high,
+
+   low:low,
+
+   close:close
+
+  });
+
+
+  if(candles[s].length>40){
+
+   candles[s].shift();
+
+  }
+
+
+  prices[s]=close;
+
  }
+
 
  render();
 }
 
+
+
 function drawChart(){
 
- let canvas=document.getElementById("chart");
- let ctx=canvas.getContext("2d");
+ let canvas=
+  document.getElementById("chart");
 
- let symbol=document.getElementById("chartStock").value;
- let data=history[symbol];
+ let ctx=
+  canvas.getContext("2d");
 
- canvas.width=canvas.clientWidth*2;
- canvas.height=300*2;
 
- ctx.scale(2,2);
+ let symbol=
+  document.getElementById(
+   "chartStock"
+  ).value;
 
- let w=canvas.clientWidth;
- let h=300;
 
- ctx.clearRect(0,0,w,h);
+ let data=
+  candles[symbol];
 
- let min=Math.min(...data);
- let max=Math.max(...data);
 
- let range=max-min||1;
+ if(!data||data.length===0){
 
- min-=range*.1;
- max+=range*.1;
+  return;
+ }
+
+
+ let cssWidth=
+  canvas.clientWidth;
+
+
+ let cssHeight=350;
+
+
+ canvas.width=
+  cssWidth*2;
+
+ canvas.height=
+  cssHeight*2;
+
+
+ ctx.setTransform(
+  2,0,0,2,0,0
+ );
+
+
+ let w=cssWidth;
+
+ let h=cssHeight;
+
+
+ ctx.clearRect(
+  0,
+  0,
+  w,
+  h
+ );
+
+
+ let min=
+  Math.min(
+   ...data.map(c=>c.low)
+  );
+
+
+ let max=
+  Math.max(
+   ...data.map(c=>c.high)
+  );
+
+
+ let range=
+  max-min||1;
+
+
+ min-=range*.08;
+
+ max+=range*.08;
+
  range=max-min;
 
+
  let left=10;
- let right=60;
+
+ let right=65;
+
  let top=20;
+
  let bottom=35;
 
- let cw=w-left-right;
- let ch=h-top-bottom;
 
- /* Grid */
+ let chartWidth=
+  w-left-right;
+
+ let chartHeight=
+  h-top-bottom;
+
+
+ /*
+ Grid lines and price scale
+ */
 
  ctx.strokeStyle="#e5e7eb";
+
  ctx.lineWidth=1;
 
- for(let i=0;i<5;i++){
 
-   let y=top+(ch/4)*i;
+ for(let i=0;i<6;i++){
 
-   ctx.beginPath();
-   ctx.moveTo(left,y);
-   ctx.lineTo(w-right,y);
-   ctx.stroke();
+  let y=
+   top+
+   chartHeight/5*i;
 
-   let price=max-(range/4)*i;
 
-   ctx.fillStyle="#6b7280";
-   ctx.font="11px Arial";
-   ctx.fillText("$"+money(price),w-right+5,y+4);
+  ctx.beginPath();
+
+  ctx.moveTo(
+   left,
+   y
+  );
+
+  ctx.lineTo(
+   w-right,
+   y
+  );
+
+  ctx.stroke();
+
+
+  let price=
+   max-
+   range/5*i;
+
+
+  ctx.fillStyle="#6b7280";
+
+  ctx.font="11px Arial";
+
+  ctx.fillText(
+   "$"+money(price),
+   w-right+5,
+   y+4
+  );
+
  }
 
- /* Bottom scale */
+
+ /*
+ Time grid
+ */
 
  for(let i=0;i<5;i++){
 
-   let x=left+(cw/4)*i;
+  let x=
+   left+
+   chartWidth/4*i;
 
-   ctx.beginPath();
-   ctx.moveTo(x,top);
-   ctx.lineTo(x,h-bottom);
-   ctx.stroke();
 
-   ctx.fillStyle="#6b7280";
-   ctx.font="10px Arial";
-   ctx.fillText(i*10+"s",x-8,h-10);
+  ctx.strokeStyle="#eeeeee";
+
+  ctx.beginPath();
+
+  ctx.moveTo(
+   x,
+   top
+  );
+
+  ctx.lineTo(
+   x,
+   h-bottom
+  );
+
+  ctx.stroke();
+
+
+  ctx.fillStyle="#6b7280";
+
+  ctx.font="10px Arial";
+
+  ctx.fillText(
+   (i*10)+"s",
+   x-8,
+   h-10
+  );
+
  }
 
- /* Determine direction */
 
- let rising=data[data.length-1]>=data[0];
+ /*
+ Candlesticks
+ */
 
- ctx.strokeStyle=rising?"#16a34a":"#dc2626";
- ctx.lineWidth=3;
- ctx.beginPath();
+ let candleWidth=
+  chartWidth/data.length;
 
- data.forEach((v,i)=>{
 
-   let x=left+(i/(data.length-1||1))*cw;
-   let y=top+(max-v)/range*ch;
+ data.forEach((c,i)=>{
 
-   if(i===0)ctx.moveTo(x,y);
-   else ctx.lineTo(x,y);
+  let x=
+   left+
+   i*candleWidth+
+   candleWidth/2;
+
+
+  let yOpen=
+   top+
+   (max-c.open)/
+   range*
+   chartHeight;
+
+
+  let yClose=
+   top+
+   (max-c.close)/
+   range*
+   chartHeight;
+
+
+  let yHigh=
+   top+
+   (max-c.high)/
+   range*
+   chartHeight;
+
+
+  let yLow=
+   top+
+   (max-c.low)/
+   range*
+   chartHeight;
+
+
+  let rising=
+   c.close>=c.open;
+
+
+  /*
+  Wick
+  */
+
+  ctx.strokeStyle=
+   rising?
+   "#16a34a":
+   "#dc2626";
+
+  ctx.lineWidth=1.5;
+
+  ctx.beginPath();
+
+  ctx.moveTo(
+   x,
+   yHigh
+  );
+
+  ctx.lineTo(
+   x,
+   yLow
+  );
+
+  ctx.stroke();
+
+
+  /*
+  Candle body
+  */
+
+  let bodyTop=
+   Math.min(
+    yOpen,
+    yClose
+   );
+
+
+  let bodyHeight=
+   Math.max(
+    2,
+    Math.abs(
+     yClose-yOpen
+    )
+   );
+
+
+  let bodyWidth=
+   Math.max(
+    3,
+    candleWidth*.65
+   );
+
+
+  ctx.fillStyle=
+   rising?
+   "#16a34a":
+   "#dc2626";
+
+
+  ctx.fillRect(
+   x-bodyWidth/2,
+   bodyTop,
+   bodyWidth,
+   bodyHeight
+  );
+
  });
 
- ctx.stroke();
 
- /* Current price */
+ /*
+ Current price
+ */
 
- let current=data[data.length-1];
+ let current=
+  data[data.length-1].close;
 
- let cy=top+(max-current)/range*ch;
 
- ctx.strokeStyle=rising?"#16a34a":"#dc2626";
- ctx.setLineDash([5,5]);
+ let currentY=
+  top+
+  (max-current)/
+  range*
+  chartHeight;
+
+
+ let first=
+  data[0].open;
+
+
+ let rising=
+  current>=first;
+
+
+ /*
+ Current price line
+ */
+
+ ctx.setLineDash([
+  5,
+  5
+ ]);
+
+ ctx.strokeStyle=
+  rising?
+  "#16a34a":
+  "#dc2626";
+
+ ctx.lineWidth=1;
+
+
  ctx.beginPath();
- ctx.moveTo(left,cy);
- ctx.lineTo(w-right,cy);
+
+ ctx.moveTo(
+  left,
+  currentY
+ );
+
+ ctx.lineTo(
+  w-right,
+  currentY
+ );
+
  ctx.stroke();
+
+
  ctx.setLineDash([]);
 
- ctx.fillStyle=rising?"#16a34a":"#dc2626";
- ctx.fillRect(w-right,cy-10,55,20);
+
+ /*
+ Price label
+ */
+
+ ctx.fillStyle=
+  rising?
+  "#16a34a":
+  "#dc2626";
+
+
+ ctx.fillRect(
+  w-right,
+  currentY-10,
+  60,
+  20
+ );
+
 
  ctx.fillStyle="white";
- ctx.font="bold 11px Arial";
- ctx.fillText("$"+money(current),w-right+4,cy+4);
 
- let price=document.getElementById("chartPrice");
- price.textContent="$"+money(current);
- price.className="price "+(rising?"up":"down");
+ ctx.font=
+  "bold 11px Arial";
+
+
+ ctx.fillText(
+  "$"+money(current),
+  w-right+4,
+  currentY+4
+ );
+
+
+ /*
+ Current price above chart
+ */
+
+ let priceElement=
+  document.getElementById(
+   "chartPrice"
+  );
+
+
+ priceElement.textContent=
+  "$"+money(current);
+
+
+ priceElement.className=
+  "price "+
+  (rising?"up":"down");
+
 }
+
+
 
 function save(){
 
  localStorage.setItem(
- "martinTrade",
- JSON.stringify({
+
+  "martinTrade",
+
+  JSON.stringify({
+
    cash:cash,
+
    holdings:holdings,
+
    trades:trades,
+
    prices:prices,
-   history:history
- })
+
+   candles:candles
+
+  })
+
  );
+
 }
+
+
 
 function load(){
 
- let data=localStorage.getItem("martinTrade");
+ let data=
+  localStorage.getItem(
+   "martinTrade"
+  );
+
 
  if(data){
 
+  try{
+
    data=JSON.parse(data);
 
-   cash=data.cash;
-   holdings=data.holdings;
-   trades=data.trades||[];
-   prices=data.prices||prices;
-   history=data.history||history;
+
+   cash=
+    data.cash;
+
+
+   holdings=
+    data.holdings||{};
+
+
+   trades=
+    data.trades||[];
+
+
+   prices=
+    data.prices||prices;
+
+
+   candles=
+    data.candles||candles;
+
+
+  }catch(e){
+
+   console.log(
+    "Saved data could not be loaded"
+   );
+
+  }
+
  }
+
 }
+
+
 
 function resetAccount(){
 
- if(confirm("Reset your account?")){
+ if(
+  confirm(
+   "Reset your account?"
+  )
+ ){
 
-   localStorage.removeItem("martinTrade");
+  localStorage.removeItem(
+   "martinTrade"
+  );
 
-   cash=10000;
-   holdings={};
-   trades=[];
 
-   for(let s in prices){
-     history[s]=[prices[s]];
-   }
+  cash=10000;
 
-   render();
+  holdings={};
+
+  trades=[];
+
+  prices={
+   ...startingPrices
+  };
+
+
+  candles={};
+
+
+  for(let s in prices){
+
+   candles[s]=
+    createInitialCandles(
+     prices[s]
+    );
+
+   prices[s]=
+    candles[s][
+     candles[s].length-1
+    ].close;
+
+  }
+
+
+  render();
+
  }
+
 }
 
+
 load();
+
 render();
 
-setInterval(updatePrices,5000);
+
+/*
+Update market every 5 seconds
+*/
+
+setInterval(
+ updatePrices,
+ 5000
+);
 
 </script>
 
