@@ -121,8 +121,23 @@ setInterval(function(){
 
 setup();
 </script>
+setInterval(function(){
+  stocks.forEach(function(s){
+    var change = (Math.random() - 0.5) * 2;
+    s.price = Math.max(1, s.price + change);
+  });
+  renderStocks();
+  render();
+}, 5000);
+setInterval(function(){
+  stocks.forEach(function(s){
+    var change = (Math.random() - 0.5) * 2;
+    s.price = Math.max(1, s.price + change);
+  });
+  renderStocks();
+  render();
+}, 5000);
 
-setInterval(function()
 setup();
 </script>
 </body>
