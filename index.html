@@ -2,70 +2,73 @@ function renderStats(){
 
  let unreal=0;
 
- data.positions.forEach(x=>{
+ data.positions.forEach(function(x){
 
   unreal +=
-   (data.prices[x.symbol]-x.entry)*
-   x.shares*
-   (x.side==='BUY'?1:-1);
+   (data.prices[x.symbol]-x.entry) *
+   x.shares *
+   (x.side==='BUY' ? 1 : -1);
 
  });
 
- let equity=
-  data.cash+
-  data.positions.reduce(
-   (a,x)=>
-    a+
-    x.shares*
-    data.prices[x.symbol]*
-    (x.side==='BUY'?1:-1),
-   0
-  );
+ let equity =
+  data.cash +
+  data.positions.reduce(function(a,x){
 
- document.getElementById('cash').textContent=
+   return a +
+    x.shares *
+    data.prices[x.symbol] *
+    (x.side==='BUY' ? 1 : -1);
+
+  },0);
+
+ document.getElementById('cash').textContent =
   money(data.cash);
 
- document.getElementById('equity').textContent=
+ document.getElementById('equity').textContent =
   money(equity);
 
- document.getElementById('totalPL').textContent=
-  signed(data.realized+unreal);
+ document.getElementById('totalPL').textContent =
+  signed(data.realized + unreal);
 
- document.getElementById('realized').textContent=
+ document.getElementById('realized').textContent =
   signed(data.realized);
 
- document.getElementById('unrealized').textContent=
+ document.getElementById('unrealized').textContent =
   signed(unreal);
 
- document.getElementById('openCount').textContent=
+ document.getElementById('openCount').textContent =
   data.positions.length;
 
- document.getElementById('wins').textContent=
-  data.history.filter(x=>x.pnl>0).length;
+ document.getElementById('wins').textContent =
+  data.history.filter(function(x){
+   return x.pnl > 0;
+  }).length;
 
- document.getElementById('losses').textContent=
-  data.history.filter(x=>x.pnl<0).length;
+ document.getElementById('losses').textContent =
+  data.history.filter(function(x){
+   return x.pnl < 0;
+  }).length;
 
- document.getElementById('chartPrice').textContent=
+ document.getElementById('chartPrice').textContent =
   money(data.prices[selected]);
 
- document.querySelectorAll('.value').forEach(e=>{
+ document.querySelectorAll('.value').forEach(function(e){
 
   if(
-   e.id==='totalPL'||
-   e.id==='realized'||
+   e.id==='totalPL' ||
+   e.id==='realized' ||
    e.id==='unrealized'
   ){
 
-   e.className=
-    'value '+
-    (
-     parseFloat(
-      e.textContent.replace(/[$,+]/g,'')
-     )>=0
-     ?'green'
-     :'red'
+   let number =
+    parseFloat(
+     e.textContent.replace(/[$,+]/g,'')
     );
+
+   e.className =
+    'value ' +
+    (number >= 0 ? 'green' : 'red');
 
   }
 
@@ -73,148 +76,175 @@ function renderStats(){
 
 }
 
+
 function renderPositions(){
 
- const box=
+ const box =
   document.getElementById('positions');
 
  if(!data.positions.length){
 
-  box.innerHTML=
+  box.innerHTML =
    '<div class="empty">No open positions</div>';
 
   return;
  }
 
- box.innerHTML=
-  '<div style="overflow-x:auto">'+
-  '<table>'+
-  '<tr>'+
-  '<th>Stock</th>'+
-  '<th>Side</th>'+
-  '<th>Shares</th>'+
-  '<th>Entry</th>'+
-  '<th>Current</th>'+
-  '<th>P/L</th>'+
-  '<th>SL</th>'+
-  '<th>TP</th>'+
-  '<th></th>'+
-  '</tr>'+
+ let html =
+  '<div style="overflow-x:auto">' +
+  '<table>' +
+  '<tr>' +
+  '<th>Stock</th>' +
+  '<th>Side</th>' +
+  '<th>Shares</th>' +
+  '<th>Entry</th>' +
+  '<th>Current</th>' +
+  '<th>P/L</th>' +
+  '<th>SL</th>' +
+  '<th>TP</th>' +
+  '<th></th>' +
+  '</tr>';
 
- data.positions.map((x,i)=>{
+ data.positions.forEach(function(x,i){
 
-  let pnl=
-   (data.prices[x.symbol]-x.entry)*
-   x.shares*
-   (x.side==='BUY'?1:-1);
+  let pnl =
+   (data.prices[x.symbol]-x.entry) *
+   x.shares *
+   (x.side==='BUY' ? 1 : -1);
 
-  return `
-   <tr>
+  html +=
+   '<tr>' +
 
-    <td>
-      <b>${x.symbol}</b>
-    </td>
+   '<td><b>' +
+   x.symbol +
+   '</b></td>' +
 
-    <td
-      class="${x.side==='BUY'?'green':'red'}"
-    >
-      ${x.side}
-    </td>
+   '<td class="' +
+   (x.side==='BUY' ? 'green' : 'red') +
+   '">' +
+   x.side +
+   '</td>' +
 
-    <td>${x.shares}</td>
+   '<td>' +
+   x.shares +
+   '</td>' +
 
-    <td>${money(x.entry)}</td>
+   '<td>' +
+   money(x.entry) +
+   '</td>' +
 
-    <td>${money(data.prices[x.symbol])}</td>
+   '<td>' +
+   money(data.prices[x.symbol]) +
+   '</td>' +
 
-    <td
-      class="${pnl>=0?'green':'red'}"
-    >
-      ${signed(pnl)}
-    </td>
+   '<td class="' +
+   (pnl>=0 ? 'green' : 'red') +
+   '">' +
+   signed(pnl) +
+   '</td>' +
 
-    <td>
-      ${x.sl?money(x.sl):'—'}
-    </td>
+   '<td>' +
+   (x.sl ? money(x.sl) : '—') +
+   '</td>' +
 
-    <td>
-      ${x.tp?money(x.tp):'—'}
-    </td>
+   '<td>' +
+   (x.tp ? money(x.tp) : '—') +
+   '</td>' +
 
-    <td>
-      <button
-        class="gray"
-        onclick="closePosition(${i})"
-      >
-        Close
-      </button>
-    </td>
+   '<td>' +
+   '<button class="gray" onclick="closePosition(' +
+   i +
+   ')">Close</button>' +
+   '</td>' +
 
-   </tr>
-  `;
+   '</tr>';
 
- }).join('')+
- '</table></div>';
+ });
+
+ html +=
+  '</table>' +
+  '</div>';
+
+ box.innerHTML = html;
 
 }
 
+
 function renderHistory(){
 
- const box=
+ const box =
   document.getElementById('history');
 
  if(!data.history.length){
 
-  box.innerHTML=
+  box.innerHTML =
    '<div class="empty">No trades yet</div>';
 
   return;
  }
 
- box.innerHTML=
-  '<table>'+
-  '<tr>'+
-  '<th>Time</th>'+
-  '<th>Stock</th>'+
-  '<th>Side</th>'+
-  '<th>Shares</th>'+
-  '<th>Entry</th>'+
-  '<th>Exit</th>'+
-  '<th>P/L</th>'+
-  '<th>Reason</th>'+
-  '</tr>'+
+ let html =
+  '<table>' +
+  '<tr>' +
+  '<th>Time</th>' +
+  '<th>Stock</th>' +
+  '<th>Side</th>' +
+  '<th>Shares</th>' +
+  '<th>Entry</th>' +
+  '<th>Exit</th>' +
+  '<th>P/L</th>' +
+  '<th>Reason</th>' +
+  '</tr>';
 
- data.history.slice().reverse().map(x=>`
+ data.history.slice().reverse().forEach(function(x){
 
-  <tr>
+  html +=
+   '<tr>' +
 
-   <td>${x.time}</td>
+   '<td>' +
+   x.time +
+   '</td>' +
 
-   <td>${x.symbol}</td>
+   '<td>' +
+   x.symbol +
+   '</td>' +
 
-   <td>${x.side}</td>
+   '<td>' +
+   x.side +
+   '</td>' +
 
-   <td>${x.shares}</td>
+   '<td>' +
+   x.shares +
+   '</td>' +
 
-   <td>${money(x.entry)}</td>
+   '<td>' +
+   money(x.entry) +
+   '</td>' +
 
-   <td>${money(x.exit)}</td>
+   '<td>' +
+   money(x.exit) +
+   '</td>' +
 
-   <td
-    class="${x.pnl>=0?'green':'red'}"
-   >
-    ${signed(x.pnl)}
-   </td>
+   '<td class="' +
+   (x.pnl>=0 ? 'green' : 'red') +
+   '">' +
+   signed(x.pnl) +
+   '</td>' +
 
-   <td>${x.reason}</td>
+   '<td>' +
+   x.reason +
+   '</td>' +
 
-  </tr>
+   '</tr>';
 
- `).join('')+
+ });
 
- '</table>';
+ html += '</table>';
+
+ box.innerHTML = html;
 
 }
+
 
 function render(){
 
@@ -225,22 +255,23 @@ function render(){
 
 }
 
+
 function placeTrade(side){
 
- const symbol=
+ const symbol =
   document.getElementById('symbol').value;
 
- const shares=
+ const shares =
   Number(
    document.getElementById('shares').value
   );
 
- const price=
+ const price =
   data.prices[symbol];
 
  if(
-  !Number.isInteger(shares)||
-  shares<1
+  !Number.isInteger(shares) ||
+  shares < 1
  ){
 
   alert(
@@ -251,8 +282,8 @@ function placeTrade(side){
  }
 
  if(
-  side==='BUY'&&
-  price*shares>data.cash
+  side==='BUY' &&
+  price*shares > data.cash
  ){
 
   alert(
@@ -264,67 +295,76 @@ function placeTrade(side){
 
  if(side==='BUY'){
 
-  data.cash-=price*shares;
+  data.cash -= price*shares;
 
  }else{
 
-  data.cash+=price*shares;
+  data.cash += price*shares;
 
  }
 
  data.positions.push({
 
-  symbol,
-  side,
-  shares,
+  symbol:symbol,
+
+  side:side,
+
+  shares:shares,
+
   entry:price,
 
   sl:
    Number(
     document.getElementById('sl').value
-   )||null,
+   ) || null,
 
   tp:
    Number(
     document.getElementById('tp').value
-   )||null,
+   ) || null,
 
   time:new Date().toLocaleString()
 
  });
 
  save();
+
  render();
 
 }
 
+
 function closePosition(
  i,
- reason='Manual Close'
+ reason
 ){
 
- const x=
+ if(!reason){
+  reason='Manual Close';
+ }
+
+ const x =
   data.positions[i];
 
- const price=
+ const price =
   data.prices[x.symbol];
 
- const pnl=
-  (price-x.entry)*
-  x.shares*
-  (x.side==='BUY'?1:-1);
+ const pnl =
+  (price-x.entry) *
+  x.shares *
+  (x.side==='BUY' ? 1 : -1);
 
  if(x.side==='BUY'){
 
-  data.cash+=price*x.shares;
+  data.cash += price*x.shares;
 
  }else{
 
-  data.cash-=price*x.shares;
+  data.cash -= price*x.shares;
 
  }
 
- data.realized+=pnl;
+ data.realized += pnl;
 
  data.history.push({
 
@@ -340,18 +380,20 @@ function closePosition(
 
   exit:price,
 
-  pnl,
+  pnl:pnl,
 
-  reason
+  reason:reason
 
  });
 
  data.positions.splice(i,1);
 
  save();
+
  render();
 
 }
+
 
 function checkRisk(){
 
@@ -361,15 +403,15 @@ function checkRisk(){
   i--
  ){
 
-  const x=
+  const x =
    data.positions[i];
 
-  const p=
+  const p =
    data.prices[x.symbol];
 
   if(
-   x.side==='BUY'&&
-   x.sl&&
+   x.side==='BUY' &&
+   x.sl &&
    p<=x.sl
   ){
 
@@ -382,8 +424,8 @@ function checkRisk(){
   }
 
   if(
-   x.side==='BUY'&&
-   x.tp&&
+   x.side==='BUY' &&
+   x.tp &&
    p>=x.tp
   ){
 
@@ -396,8 +438,8 @@ function checkRisk(){
   }
 
   if(
-   x.side==='SELL'&&
-   x.sl&&
+   x.side==='SELL' &&
+   x.sl &&
    p>=x.sl
   ){
 
@@ -410,8 +452,8 @@ function checkRisk(){
   }
 
   if(
-   x.side==='SELL'&&
-   x.tp&&
+   x.side==='SELL' &&
+   x.tp &&
    p<=x.tp
   ){
 
@@ -426,6 +468,7 @@ function checkRisk(){
 
 }
 
+
 function saveRisk(){
 
  alert(
@@ -434,52 +477,51 @@ function saveRisk(){
 
 }
 
+
 function tick(){
 
- for(
-  const s of Object.keys(initial)
- ){
+ Object.keys(initial).forEach(function(s){
 
-  let p=
+  let p =
    data.prices[s];
 
-  let move=
-   (Math.random()-.49)*
-   p*
+  let move =
+   (Math.random()-.49) *
+   p *
    .006;
 
-  let np=
+  let np =
    Math.max(
     p*.5,
     p+move
    );
 
-  let arr=
+  let arr =
    data.candles[s];
 
-  let last=
+  let last =
    arr[arr.length-1];
 
-  let o=
+  let o =
    last.c;
 
-  let c={
+  let candle = {
 
-   o,
+   o:o,
 
    h:
-    Math.max(o,np)*
+    Math.max(o,np) *
     (1+Math.random()*.002),
 
    l:
-    Math.min(o,np)*
+    Math.min(o,np) *
     (1-Math.random()*.002),
 
    c:np
 
   };
 
-  arr.push(c);
+  arr.push(candle);
 
   if(arr.length>45){
 
@@ -489,40 +531,44 @@ function tick(){
 
   data.prices[s]=np;
 
- }
+ });
 
  checkRisk();
 
  save();
 
  renderMarkets();
+
  renderStats();
+
  renderPositions();
+
  drawChart();
 
 }
 
+
 function drawChart(){
 
- const canvas=
+ const canvas =
   document.getElementById('chart');
 
- const ctx=
+ const ctx =
   canvas.getContext('2d');
 
- const dpr=
-  devicePixelRatio||1;
+ const dpr =
+  window.devicePixelRatio || 1;
 
- const w=
+ const w =
   canvas.clientWidth;
 
- const h=
+ const h =
   canvas.clientHeight;
 
- canvas.width=
+ canvas.width =
   w*dpr;
 
- canvas.height=
+ canvas.height =
   h*dpr;
 
  ctx.setTransform(
@@ -541,45 +587,50 @@ function drawChart(){
   h
  );
 
- const a=
-  data.candles[selected]||[];
+ const a =
+  data.candles[selected] || [];
 
- const vals=
-  a.flatMap(
-   x=>[x.h,x.l]
-  );
+ if(!a.length){
+  return;
+ }
 
- if(!a.length)return;
+ const vals =
+  a.flatMap(function(x){
+   return [x.h,x.l];
+  });
 
- let min=
-  Math.min(...vals);
+ let min =
+  Math.min.apply(null,vals);
 
- let max=
-  Math.max(...vals);
+ let max =
+  Math.max.apply(null,vals);
 
- let pad=
+ let pad =
   (max-min)*.1;
 
- min-=pad;
- max+=pad;
+ min -= pad;
+ max += pad;
 
- const y=
-  v=>
-   h-25-
-   (v-min)/
-   (max-min)*
-   (h-45);
+ const y =
+  function(v){
 
- const step=
+   return h-25 -
+    (v-min) /
+    (max-min) *
+    (h-45);
+
+  };
+
+ const step =
   w/a.length;
 
- const bw=
+ const bw =
   Math.max(
    3,
    step*.55
   );
 
- ctx.strokeStyle=
+ ctx.strokeStyle =
   '#334155';
 
  ctx.lineWidth=1;
@@ -590,8 +641,8 @@ function drawChart(){
   i++
  ){
 
-  let yy=
-   20+
+  let yy =
+   20 +
    i*(h-45)/4;
 
   ctx.beginPath();
@@ -610,71 +661,69 @@ function drawChart(){
 
  }
 
- a.forEach(
-  (x,i)=>{
+ a.forEach(function(x,i){
 
-   let xx=
-    i*step+
-    step/2;
+  let xx =
+   i*step +
+   step/2;
 
-   let up=
-    x.c>=x.o;
+  let up =
+   x.c >= x.o;
 
-   ctx.strokeStyle=
-    up
-    ?'#34d399'
-    :'#fb7185';
+  ctx.strokeStyle =
+   up
+   ? '#34d399'
+   : '#fb7185';
 
-   ctx.fillStyle=
-    ctx.strokeStyle;
+  ctx.fillStyle =
+   ctx.strokeStyle;
 
-   ctx.beginPath();
+  ctx.beginPath();
 
-   ctx.moveTo(
-    xx,
-    y(x.h)
-   );
+  ctx.moveTo(
+   xx,
+   y(x.h)
+  );
 
-   ctx.lineTo(
-    xx,
-    y(x.l)
-   );
+  ctx.lineTo(
+   xx,
+   y(x.l)
+  );
 
-   ctx.stroke();
+  ctx.stroke();
 
-   let top=
-    y(
-     Math.max(
-      x.o,
-      x.c
-     )
-    );
-
-   let bot=
-    y(
-     Math.min(
-      x.o,
-      x.c
-     )
-    );
-
-   ctx.fillRect(
-    xx-bw/2,
-    top,
-    bw,
+  let top =
+   y(
     Math.max(
-     1,
-     bot-top
+     x.o,
+     x.c
     )
    );
 
-  }
- );
+  let bot =
+   y(
+    Math.min(
+     x.o,
+     x.c
+    )
+   );
 
- ctx.fillStyle=
+  ctx.fillRect(
+   xx-bw/2,
+   top,
+   bw,
+   Math.max(
+    1,
+    bot-top
+   )
+  );
+
+ });
+
+ ctx.fillStyle =
   '#cbd5e1';
 
- ctx.font=
+ ctx.font =
   '11px Arial';
 
  ctx.fillText(
@@ -690,6 +739,7 @@ function drawChart(){
  );
 
 }
+
 
 function resetAccount(){
 
@@ -727,22 +777,28 @@ function resetAccount(){
 
 }
 
+
 document.getElementById(
  'symbol'
-).innerHTML=
+).innerHTML =
  Object.keys(initial)
- .map(
-  s=>`<option>${s}</option>`
- )
+ .map(function(s){
+  return '<option>' +
+   s +
+   '</option>';
+ })
  .join('');
+
 
 document.getElementById(
  'symbol'
 ).addEventListener(
  'change',
- e=>
-  selectSymbol(e.target.value)
+ function(e){
+  selectSymbol(e.target.value);
+ }
 );
+
 
 initCandles();
 
@@ -750,16 +806,14 @@ render();
 
 drawChart();
 
+
 setInterval(
  tick,
  5000
 );
 
+
 window.addEventListener(
  'resize',
  drawChart
 );
-</script>
-
-</body>
-    </html>
