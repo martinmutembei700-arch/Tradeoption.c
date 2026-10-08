@@ -12,178 +12,187 @@ body{
   margin:0;
   font-family:Arial,sans-serif;
   background:#f5f7fb;
-  color:#172033
+  color:#172033;
 }
 
 header{
   background:#111827;
   color:white;
   padding:18px 20px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center
 }
 
-.logo{
-  font-size:21px;
-  font-weight:700
+header h1{
+  margin:0;
+  font-size:24px;
 }
 
-.tag{
-  font-size:12px;
-  color:#a7f3d0
+header p{
+  margin:5px 0 0;
+  font-size:13px;
+  color:#cbd5e1;
 }
 
 main{
-  max-width:1050px;
+  max-width:1000px;
   margin:auto;
-  padding:20px
+  padding:20px;
 }
 
-.cards{
+.dashboard{
   display:grid;
   grid-template-columns:repeat(3,1fr);
-  gap:14px;
-  margin-bottom:20px
+  gap:15px;
+  margin-bottom:20px;
 }
 
 .card{
   background:white;
-  border-radius:14px;
   padding:18px;
-  box-shadow:0 2px 10px #0000000b
+  border-radius:12px;
+  box-shadow:0 2px 8px rgba(0,0,0,.08);
 }
 
-.label{
+.card span{
+  display:block;
+  color:#64748b;
   font-size:13px;
-  color:#667085
+  margin-bottom:8px;
 }
 
-.value{
-  font-size:25px;
-  font-weight:700;
-  margin-top:6px
+.card strong{
+  font-size:22px;
 }
 
-.grid{
-  display:grid;
-  grid-template-columns:1.4fr .9fr;
-  gap:18px
-}
-
-.panel{
+.section{
   background:white;
-  border-radius:14px;
   padding:18px;
-  box-shadow:0 2px 10px #0000000b
+  border-radius:12px;
+  margin-bottom:20px;
+  box-shadow:0 2px 8px rgba(0,0,0,.08);
 }
 
-h2{
-  font-size:18px;
-  margin:0 0 14px
+.section h2{
+  margin-top:0;
 }
 
-input,select,button{
+#search{
   width:100%;
-  padding:11px;
-  border:1px solid #d9dee8;
-  border-radius:9px;
-  font-size:15px
-}
-
-button{
-  border:0;
-  cursor:pointer;
-  font-weight:700
-}
-
-.buy{
-  background:#16a34a;
-  color:white
-}
-
-.sell{
-  background:#dc2626;
-  color:white
-}
-
-.row{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:10px;
-  margin-top:10px
+  padding:12px;
+  border:1px solid #d1d5db;
+  border-radius:8px;
+  margin-bottom:15px;
+  font-size:15px;
 }
 
 .stock{
   display:flex;
   justify-content:space-between;
   align-items:center;
-  padding:13px 0;
+  padding:13px;
   border-bottom:1px solid #eee;
-  cursor:pointer
+  cursor:pointer;
 }
 
 .stock:last-child{
-  border:0
+  border-bottom:0;
 }
 
-.ticker{
-  font-weight:700
+.stock:hover{
+  background:#f8fafc;
 }
 
-.company{
-  font-size:12px;
-  color:#667085
+.symbol{
+  font-weight:bold;
+}
+
+.stock-name{
+  font-size:13px;
+  color:#64748b;
+  margin-top:3px;
 }
 
 .price{
-  text-align:right;
-  font-weight:700
+  font-weight:bold;
+}
+
+.trade-box{
+  display:grid;
+  grid-template-columns:1fr 100px 100px 100px;
+  gap:10px;
+  align-items:center;
+}
+
+select,input{
+  width:100%;
+  padding:11px;
+  border:1px solid #d1d5db;
+  border-radius:8px;
+  font-size:15px;
+}
+
+button{
+  padding:11px;
+  border:0;
+  border-radius:8px;
+  cursor:pointer;
+  font-weight:bold;
+}
+
+.buy{
+  background:#16a34a;
+  color:white;
+}
+
+.sell{
+  background:#dc2626;
+  color:white;
 }
 
 table{
   width:100%;
   border-collapse:collapse;
-  font-size:14px
 }
 
 th,td{
+  padding:11px;
   text-align:left;
-  padding:11px 5px;
-  border-bottom:1px solid #eee
+  border-bottom:1px solid #eee;
 }
 
 th{
-  color:#667085;
-  font-size:12px
+  color:#64748b;
+  font-size:13px;
 }
 
-.note{
-  font-size:12px;
-  color:#667085;
-  margin-top:14px;
-  line-height:1.5
+.empty{
+  color:#64748b;
 }
 
-@media(max-width:750px){
-  .cards{
-    grid-template-columns:1fr
+.profit{
+  font-weight:bold;
+}
+
+.notice{
+  color:#64748b;
+  font-size:13px;
+  margin-top:12px;
+}
+
+@media(max-width:700px){
+  .dashboard{
+    grid-template-columns:1fr;
   }
 
-  .grid{
-    grid-template-columns:1fr
+  .trade-box{
+    grid-template-columns:1fr 1fr;
   }
 
-  main{
-    padding:12px
+  .trade-box select{
+    grid-column:1/-1;
   }
 
-  header{
-    padding:15px
-  }
-
-  .tag{
-    font-size:10px
+  table{
+    font-size:13px;
   }
 }
 </style>
@@ -192,558 +201,391 @@ th{
 <body>
 
 <header>
-  <div class="logo">Martin Trade</div>
-  <div class="tag">PAPER TRADING • VIRTUAL MONEY</div>
+  <h1>Martin Trade</h1>
+  <p>PAPER TRADING • VIRTUAL MONEY</p>
 </header>
 
 <main>
 
-<div class="cards">
+  <div class="dashboard">
 
-  <div class="card">
-    <div class="label">Virtual Cash</div>
-    <div class="value" id="cash">$10,000.00</div>
+    <div class="card">
+      <span>Virtual Cash</span>
+      <strong id="cash">$10,000.00</strong>
+    </div>
+
+    <div class="card">
+      <span>Portfolio Value</span>
+      <strong id="portfolioValue">$10,000.00</strong>
+    </div>
+
+    <div class="card">
+      <span>Total P/L</span>
+      <strong id="totalPL">$0.00</strong>
+    </div>
+
   </div>
 
-  <div class="card">
-    <div class="label">Portfolio Value</div>
-    <div class="value" id="portfolio">$10,000.00</div>
-  </div>
-
-  <div class="card">
-    <div class="label">Total P/L</div>
-    <div class="value" id="pnl">$0.00</div>
-  </div>
-
-</div>
-
-
-<div class="grid">
-
-<section class="panel">
-
-  <h2>Stocks</h2>
-
-  <input
-    id="search"
-    placeholder="Search stocks..."
-    oninput="renderStocks()"
-  >
-
-  <div id="stocks"></div>
-
-</section>
-
-
-<section class="panel">
-
-  <h2>Place Trade</h2>
-
-  <select id="symbol"></select>
-
-  <div style="margin-top:10px">
+  <div class="section">
+    <h2>Stocks</h2>
 
     <input
-      id="shares"
-      type="number"
-      min="1"
-      value="1"
-      placeholder="Number of shares"
+      id="search"
+      type="text"
+      placeholder="Search stocks..."
+      oninput="renderStocks()"
     >
+
+    <div id="stockList"></div>
+  </div>
+
+  <div class="section">
+
+    <h2>Place Trade</h2>
+
+    <div class="trade-box">
+
+      <select id="symbol"></select>
+
+      <input
+        id="shares"
+        type="number"
+        min="1"
+        value="1"
+      >
+
+      <button class="buy" onclick="trade('BUY')">
+        BUY
+      </button>
+
+      <button class="sell" onclick="trade('SELL')">
+        SELL
+      </button>
+
+    </div>
+
+    <p class="notice">
+      This is a simulation. No real money or real orders are used.
+    </p>
 
   </div>
 
-  <div class="row">
+  <div class="section">
 
-    <button
-      class="buy"
-      onclick="trade('buy')"
-    >
-      BUY
-    </button>
+    <h2>Your Portfolio</h2>
 
-    <button
-      class="sell"
-      onclick="trade('sell')"
-    >
-      SELL
-    </button>
+    <div id="portfolio"></div>
 
   </div>
 
-  <div class="note">
-    This is a simulation. No real money or real orders are used.
+  <div class="section">
+
+    <h2>Trade History</h2>
+
+    <div id="history"></div>
+
   </div>
-
-</section>
-
-</div>
-
-
-<div
-  class="panel"
-  style="margin-top:18px"
->
-
-  <h2>Your Portfolio</h2>
-
-  <div id="portfolioTable"></div>
-
-</div>
 
 </main>
-
 
 <script>
 
 const stocks = [
-
-  {
-    symbol:"AAPL",
-    name:"Apple",
-    price:255.00
-  },
-
-  {
-    symbol:"MSFT",
-    name:"Microsoft",
-    price:530.00
-  },
-
-  {
-    symbol:"NVDA",
-    name:"NVIDIA",
-    price:180.00
-  },
-
-  {
-    symbol:"TSLA",
-    name:"Tesla",
-    price:450.00
-  },
-
-  {
-    symbol:"AMZN",
-    name:"Amazon",
-    price:225.00
-  },
-
-  {
-    symbol:"GOOGL",
-    name:"Alphabet",
-    price:245.00
-  }
-
+  {symbol:"AAPL",name:"Apple",price:255.00},
+  {symbol:"MSFT",name:"Microsoft",price:530.00},
+  {symbol:"NVDA",name:"NVIDIA",price:180.00},
+  {symbol:"TSLA",name:"Tesla",price:450.00},
+  {symbol:"AMZN",name:"Amazon",price:225.00},
+  {symbol:"GOOGL",name:"Alphabet",price:245.00}
 ];
 
-
 let cash = 10000;
-
 let start = 10000;
-
 let holdings = {};
-
 let trades = [];
 
-
 function money(n){
-
-  return "$" + n.toLocaleString(
-    undefined,
-    {
-      minimumFractionDigits:2,
-      maximumFractionDigits:2
-    }
-  );
-
+  return "$" + Number(n).toFixed(2);
 }
-
 
 function renderStocks(){
 
-  let q =
-    document
-      .getElementById("search")
-      .value
-      .toLowerCase();
+  const list = document.getElementById("stockList");
+  const search = document.getElementById("search").value.toLowerCase();
 
+  list.innerHTML = "";
 
-  document.getElementById("stocks").innerHTML =
+  stocks
+    .filter(s =>
+      s.symbol.toLowerCase().includes(search) ||
+      s.name.toLowerCase().includes(search)
+    )
+    .forEach(s => {
 
-    stocks
+      const div = document.createElement("div");
 
-      .filter(function(s){
+      div.className = "stock";
 
-        return (
-          s.symbol
-            .toLowerCase()
-            .includes(q)
+      div.innerHTML = `
+        <div>
+          <div class="symbol">${s.symbol}</div>
+          <div class="stock-name">${s.name}</div>
+        </div>
 
-          ||
+        <div class="price">
+          ${money(s.price)}
+        </div>
+      `;
 
-          s.name
-            .toLowerCase()
-            .includes(q)
-        );
+      div.onclick = function(){
+        document.getElementById("symbol").value = s.symbol;
+      };
 
-      })
+      list.appendChild(div);
 
-      .map(function(s){
-
-        return `
-
-          <div
-            class="stock"
-            onclick="
-              document.getElementById('symbol').value='${s.symbol}'
-            "
-          >
-
-            <div>
-
-              <div class="ticker">
-                ${s.symbol}
-              </div>
-
-              <div class="company">
-                ${s.name}
-              </div>
-
-            </div>
-
-            <div class="price">
-              ${money(s.price)}
-            </div>
-
-          </div>
-
-        `;
-
-      })
-
-      .join("");
-
+    });
 }
-
 
 function setup(){
 
-  document.getElementById("symbol").innerHTML =
+  const select = document.getElementById("symbol");
 
-    stocks
+  stocks.forEach(s => {
 
-      .map(function(s){
+    const option = document.createElement("option");
 
-        return `
-          <option value="${s.symbol}">
-            ${s.symbol}
-          </option>
-        `;
+    option.value = s.symbol;
+    option.textContent = s.symbol;
 
-      })
-
-      .join("");
-
-
-  renderStocks();
-
-  render();
-
-}
-
-
-function trade(side){
-
-  let sym =
-    document
-      .getElementById("symbol")
-      .value;
-
-
-  let qty =
-    Number(
-      document
-        .getElementById("shares")
-        .value
-    );
-
-
-  let s =
-    stocks.find(function(x){
-
-      return x.symbol === sym;
-
-    });
-
-
-  if(!qty || qty < 1){
-
-    alert(
-      "Enter a valid number of shares."
-    );
-
-    return;
-
-  }
-
-
-  let cost =
-    s.price * qty;
-
-
-  holdings[sym] =
-    holdings[sym] || 0;
-
-
-  if(side === "buy"){
-
-    if(cost > cash){
-
-      alert(
-        "Not enough virtual cash."
-      );
-
-      return;
-
-    }
-
-
-    cash -= cost;
-
-    holdings[sym] += qty;
-
-  }
-
-  else{
-
-    if(qty > holdings[sym]){
-
-      alert(
-        "You don't own enough shares."
-      );
-
-      return;
-
-    }
-
-
-    cash += cost;
-
-    holdings[sym] -= qty;
-
-  }
-
-
-  trades.push({
-
-    side:side,
-
-    sym:sym,
-
-    qty:qty,
-
-    price:s.price
+    select.appendChild(option);
 
   });
 
+  renderStocks();
+  render();
+
+}
+
+function trade(side){
+
+  const symbol = document.getElementById("symbol").value;
+
+  const shares = Number(
+    document.getElementById("shares").value
+  );
+
+  const stock = stocks.find(
+    s => s.symbol === symbol
+  );
+
+  if(!stock || shares <= 0){
+    alert("Enter a valid number of shares.");
+    return;
+  }
+
+  const value = stock.price * shares;
+
+  if(side === "BUY"){
+
+    if(value > cash){
+
+      alert("Not enough virtual cash.");
+
+      return;
+    }
+
+    cash -= value;
+
+    holdings[symbol] =
+      (holdings[symbol] || 0) + shares;
+
+    trades.unshift({
+
+      type:"BUY",
+      symbol:symbol,
+      shares:shares,
+      price:stock.price,
+      time:new Date().toLocaleString()
+
+    });
+
+  }
+
+  if(side === "SELL"){
+
+    if((holdings[symbol] || 0) < shares){
+
+      alert("You don't own enough shares.");
+
+      return;
+    }
+
+    cash += value;
+
+    holdings[symbol] -= shares;
+
+    if(holdings[symbol] <= 0){
+      delete holdings[symbol];
+    }
+
+    trades.unshift({
+
+      type:"SELL",
+      symbol:symbol,
+      shares:shares,
+      price:stock.price,
+      time:new Date().toLocaleString()
+
+    });
+
+  }
 
   render();
 
 }
 
-
 function render(){
 
-  let value = cash;
+  let portfolioValue = cash;
 
+  let portfolioHTML = "";
 
-  Object
-    .entries(holdings)
-    .forEach(function([sym,q]){
+  const ownedSymbols = Object.keys(holdings);
 
-      let stock =
-        stocks.find(function(s){
+  if(ownedSymbols.length === 0){
 
-          return s.symbol === sym;
+    portfolioHTML =
+      `<p class="empty">
+        No stocks yet. Choose a stock and press BUY.
+      </p>`;
 
-        });
+  }else{
 
+    portfolioHTML = `
+      <table>
+        <tr>
+          <th>Stock</th>
+          <th>Shares</th>
+          <th>Price</th>
+          <th>Value</th>
+        </tr>
+    `;
 
-      if(stock){
+    ownedSymbols.forEach(symbol => {
 
-        value +=
-          q * stock.price;
+      const stock =
+        stocks.find(s => s.symbol === symbol);
 
-      }
+      const shares = holdings[symbol];
+
+      const value = shares * stock.price;
+
+      portfolioValue += value;
+
+      portfolioHTML += `
+        <tr>
+          <td>${symbol}</td>
+          <td>${shares}</td>
+          <td>${money(stock.price)}</td>
+          <td>${money(value)}</td>
+        </tr>
+      `;
 
     });
 
+    portfolioHTML += "</table>";
 
-  let pnl =
-    value - start;
+  }
 
+  const totalPL = portfolioValue - start;
 
-  document
-    .getElementById("cash")
-    .textContent =
+  document.getElementById("cash").textContent =
     money(cash);
 
+  document.getElementById("portfolioValue").textContent =
+    money(portfolioValue);
 
-  document
-    .getElementById("portfolio")
-    .textContent =
-    money(value);
+  document.getElementById("totalPL").textContent =
+    (totalPL >= 0 ? "+" : "") + money(totalPL);
 
+  document.getElementById("portfolio").innerHTML =
+    portfolioHTML;
 
-  document
-    .getElementById("pnl")
-    .textContent =
-    (pnl >= 0 ? "+" : "") +
-    money(pnl);
-
-
-  document
-    .getElementById("pnl")
-    .style.color =
-    pnl >= 0
-      ? "#16a34a"
-      : "#dc2626";
-
-
-  let rows =
-
-    Object
-      .entries(holdings)
-
-      .filter(function([sym,q]){
-
-        return q > 0;
-
-      })
-
-      .map(function([sym,q]){
-
-        let p =
-          stocks.find(function(s){
-
-            return s.symbol === sym;
-
-          }).price;
-
-
-        return `
-
-          <tr>
-
-            <td>
-              <b>${sym}</b>
-            </td>
-
-            <td>
-              ${q}
-            </td>
-
-            <td>
-              ${money(p)}
-            </td>
-
-            <td>
-              ${money(q * p)}
-            </td>
-
-          </tr>
-
-        `;
-
-      })
-
-      .join("");
-
-
-  document
-    .getElementById("portfolioTable")
-    .innerHTML =
-
-    rows
-
-      ? `
-
-        <table>
-
-          <tr>
-
-            <th>
-              Stock
-            </th>
-
-            <th>
-              Shares
-            </th>
-
-            <th>
-              Price
-            </th>
-
-            <th>
-              Value
-            </th>
-
-          </tr>
-
-          ${rows}
-
-        </table>
-
-        `
-
-      :
-
-        `
-
-        <div class="note">
-
-          No stocks yet.
-          Choose a stock and press BUY.
-
-        </div>
-
-        `;
+  renderHistory();
 
 }
 
+function renderHistory(){
 
-/*
-  Simulate stock price movement
-  every 5 seconds.
-*/
+  const history =
+    document.getElementById("history");
+
+  if(trades.length === 0){
+
+    history.innerHTML =
+      `<p class="empty">
+        No trades yet.
+      </p>`;
+
+    return;
+  }
+
+  let html = `
+    <table>
+
+      <tr>
+        <th>Type</th>
+        <th>Stock</th>
+        <th>Shares</th>
+        <th>Price</th>
+        <th>Time</th>
+      </tr>
+  `;
+
+  trades.forEach(t => {
+
+    html += `
+      <tr>
+
+        <td class="profit">
+          ${t.type}
+        </td>
+
+        <td>${t.symbol}</td>
+
+        <td>${t.shares}</td>
+
+        <td>${money(t.price)}</td>
+
+        <td>${t.time}</td>
+
+      </tr>
+    `;
+
+  });
+
+  html += "</table>";
+
+  history.innerHTML = html;
+
+}
 
 setInterval(function(){
 
   stocks.forEach(function(s){
 
-    let change =
+    const change =
       (Math.random() - 0.5) * 2;
 
-
     s.price =
-      Math.max(
-        1,
-        s.price + change
-      );
+      Math.max(1, s.price + change);
 
   });
 
-
   renderStocks();
-
   render();
 
 },5000);
-
-
-/*
-  Start the application.
-*/
 
 setup();
 
