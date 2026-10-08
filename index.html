@@ -108,7 +108,10 @@ function render(){
  document.getElementById("portfolioTable").innerHTML=rows?
  `<table><tr><th>Stock</th><th>Shares</th><th>Price</th><th>Value</th></tr>${rows}</table>`:
  `<div class="note">No stocks yet. Choose a stock and press BUY.</div>`;
+}<div class="note">No stocks yet. Choose a stock and press BUY.</div>`;
 }
+
+setInterval(function(){
 setup();
 </script>
 </body>
