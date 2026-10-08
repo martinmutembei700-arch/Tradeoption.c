@@ -132,13 +132,496 @@ setInterval(function(){
 setInterval(function(){
   stocks.forEach(function(s){
     var change = (Math.random() - 0.5) * 2;
-    s.price = Math.max(1, s.price + change);
+   <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Martin Trade — Paper Trading</title>
+
+<style>
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#f5f7fb;
+  color:#172033
+}
+
+header{
+  background:#111827;
+  color:white;
+  padding:18px 20px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center
+}
+
+.logo{
+  font-size:21px;
+  font-weight:700
+}
+
+.tag{
+  font-size:12px;
+  color:#a7f3d0
+}
+
+main{
+  max-width:1050px;
+  margin:auto;
+  padding:20px
+}
+
+.cards{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:14px;
+  margin-bottom:20px
+}
+
+.card{
+  background:white;
+  border-radius:14px;
+  padding:18px;
+  box-shadow:0 2px 10px #0000000b
+}
+
+.label{
+  font-size:13px;
+  color:#667085
+}
+
+.value{
+  font-size:25px;
+  font-weight:700;
+  margin-top:6px
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:1.4fr .9fr;
+  gap:18px
+}
+
+.panel{
+  background:white;
+  border-radius:14px;
+  padding:18px;
+  box-shadow:0 2px 10px #0000000b
+}
+
+h2{
+  font-size:18px;
+  margin:0 0 14px
+}
+
+input,select,button{
+  width:100%;
+  padding:11px;
+  border:1px solid #d9dee8;
+  border-radius:9px;
+  font-size:15px
+}
+
+button{
+  border:0;
+  cursor:pointer;
+  font-weight:700
+}
+
+.buy{
+  background:#16a34a;
+  color:white
+}
+
+.sell{
+  background:#dc2626;
+  color:white
+}
+
+.row{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-top:10px
+}
+
+.stock{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:13px 0;
+  border-bottom:1px solid #eee;
+  cursor:pointer
+}
+
+.stock:last-child{
+  border:0
+}
+
+.ticker{
+  font-weight:700
+}
+
+.company{
+  font-size:12px;
+  color:#667085
+}
+
+.price{
+  text-align:right;
+  font-weight:700
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:14px
+}
+
+th,td{
+  text-align:left;
+  padding:11px 5px;
+  border-bottom:1px solid #eee
+}
+
+th{
+  color:#667085;
+  font-size:12px
+}
+
+.note{
+  font-size:12px;
+  color:#667085;
+  margin-top:14px;
+  line-height:1.5
+}
+
+@media(max-width:750px){
+  .cards{
+    grid-template-columns:1fr
+  }
+
+  .grid{
+    grid-template-columns:1fr
+  }
+
+  main{
+    padding:12px
+  }
+
+  header{
+    padding:15px
+  }
+
+  .tag{
+    font-size:10px
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">Martin Trade</div>
+  <div class="tag">PAPER TRADING • VIRTUAL MONEY</div>
+</header>
+
+<main>
+
+  <div class="cards">
+
+    <div class="card">
+      <div class="label">Virtual Cash</div>
+      <div class="value" id="cash">$10,000.00</div>
+    </div>
+
+    <div class="card">
+      <div class="label">Portfolio Value</div>
+      <div class="value" id="portfolio">$10,000.00</div>
+    </div>
+
+    <div class="card">
+      <div class="label">Total P/L</div>
+      <div class="value" id="pnl">$0.00</div>
+    </div>
+
+  </div>
+
+  <div class="grid">
+
+    <section class="panel">
+
+      <h2>Stocks</h2>
+
+      <input
+        id="search"
+        placeholder="Search stocks..."
+        oninput="renderStocks()"
+      >
+
+      <div id="stocks"></div>
+
+    </section>
+
+    <section class="panel">
+
+      <h2>Place Trade</h2>
+
+      <select id="symbol"></select>
+
+      <div style="margin-top:10px">
+        <input
+          id="shares"
+          type="number"
+          min="1"
+          value="1"
+          placeholder="Number of shares"
+        >
+      </div>
+
+      <div class="row">
+        <button class="buy" onclick="trade('buy')">BUY</button>
+        <button class="sell" onclick="trade('sell')">SELL</button>
+      </div>
+
+      <div class="note">
+        This is a simulation. No real money or real orders are used.
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="panel" style="margin-top:18px">
+
+    <h2>Your Portfolio</h2>
+
+    <div id="portfolioTable"></div>
+
+  </div>
+
+</main>
+
+<script>
+
+const stocks = [
+  {symbol:"AAPL", name:"Apple", price:255.00},
+  {symbol:"MSFT", name:"Microsoft", price:530.00},
+  {symbol:"NVDA", name:"NVIDIA", price:180.00},
+  {symbol:"TSLA", name:"Tesla", price:450.00},
+  {symbol:"AMZN", name:"Amazon", price:225.00},
+  {symbol:"GOOGL", name:"Alphabet", price:245.00}
+];
+
+let cash = 10000;
+let start = 10000;
+let holdings = {};
+let trades = [];
+
+
+function money(n){
+  return "$" + n.toLocaleString(undefined,{
+    minimumFractionDigits:2,
+    maximumFractionDigits:2
   });
+}
+
+
+function renderStocks(){
+
+  let q = document
+    .getElementById("search")
+    .value
+    .toLowerCase();
+
+  document.getElementById("stocks").innerHTML =
+    stocks
+      .filter(s =>
+        s.symbol.toLowerCase().includes(q) ||
+        s.name.toLowerCase().includes(q)
+      )
+      .map(s => `
+        <div class="stock"
+             onclick="document.getElementById('symbol').value='${s.symbol}'">
+
+          <div>
+            <div class="ticker">${s.symbol}</div>
+            <div class="company">${s.name}</div>
+          </div>
+
+          <div class="price">${money(s.price)}</div>
+
+        </div>
+      `)
+      .join("");
+}
+
+
+function setup(){
+
+  document.getElementById("symbol").innerHTML =
+    stocks
+      .map(s => `<option value="${s.symbol}">${s.symbol}</option>`)
+      .join("");
+
   renderStocks();
   render();
-}, 5000);
+}
+
+
+function trade(side){
+
+  let sym = document.getElementById("symbol").value;
+
+  let qty = Number(
+    document.getElementById("shares").value
+  );
+
+  let s = stocks.find(x => x.symbol === sym);
+
+  if(!qty || qty < 1){
+    alert("Enter a valid number of shares.");
+    return;
+  }
+
+  let cost = s.price * qty;
+
+  holdings[sym] = holdings[sym] || 0;
+
+  if(side === "buy"){
+
+    if(cost > cash){
+      alert("Not enough virtual cash.");
+      return;
+    }
+
+    cash -= cost;
+    holdings[sym] += qty;
+
+  }else{
+
+    if(qty > holdings[sym]){
+      alert("You don't own enough shares.");
+      return;
+    }
+
+    cash += cost;
+    holdings[sym] -= qty;
+  }
+
+  trades.push({
+    side:side,
+    sym:sym,
+    qty:qty,
+    price:s.price
+  });
+
+  render();
+}
+
+
+function render(){
+
+  let value = cash;
+
+  Object.entries(holdings).forEach(([sym,q]) => {
+
+    let stock = stocks.find(s => s.symbol === sym);
+
+    if(stock){
+      value += q * stock.price;
+    }
+
+  });
+
+  let pnl = value - start;
+
+  document.getElementById("cash").textContent =
+    money(cash);
+
+  document.getElementById("portfolio").textContent =
+    money(value);
+
+  document.getElementById("pnl").textContent =
+    (pnl >= 0 ? "+" : "") + money(pnl);
+
+  document.getElementById("pnl").style.color =
+    pnl >= 0 ? "#16a34a" : "#dc2626";
+
+
+  let rows =
+    Object.entries(holdings)
+      .filter(([sym,q]) => q > 0)
+      .map(([sym,q]) => {
+
+        let p =
+          stocks.find(s => s.symbol === sym).price;
+
+        return `
+          <tr>
+            <td><b>${sym}</b></td>
+            <td>${q}</td>
+            <td>${money(p)}</td>
+            <td>${money(q * p)}</td>
+          </tr>
+        `;
+
+      })
+      .join("");
+
+
+  document.getElementById("portfolioTable").innerHTML =
+    rows
+      ? `
+        <table>
+          <tr>
+            <th>Stock</th>
+            <th>Shares</th>
+            <th>Price</th>
+            <th>Value</th>
+          </tr>
+
+          ${rows}
+
+        </table>
+        `
+      : `
+        <div class="note">
+          No stocks yet. Choose a stock and press BUY.
+        </div>
+        `;
+}
+
+
+/* Simulate price movement every 5 seconds */
+
+setInterval(function(){
+
+  stocks.forEach(function(s){
+
+    let change =
+      (Math.random() - 0.5) * 2;
+
+    s.price =
+      Math.max(1, s.price + change);
+
+  });
+
+  renderStocks();
+  render();
+
+},5000);
+
+
+/* Start the application */
 
 setup();
+
 </script>
+
 </body>
 </html>
