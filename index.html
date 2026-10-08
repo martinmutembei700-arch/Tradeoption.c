@@ -6,265 +6,263 @@
 <title>Martin Trade — Paper Trading</title>
 
 <style>
-* {
-  box-sizing: border-box;
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#f5f7fb;
+  color:#172033;
 }
 
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #f5f7fb;
-  color: #172033;
+header{
+  background:#111827;
+  color:white;
+  padding:20px;
 }
 
-header {
-  background: #111827;
-  color: white;
-  padding: 20px;
+header h1{
+  margin:0;
+  font-size:24px;
 }
 
-header h1 {
-  margin: 0;
-  font-size: 24px;
+header p{
+  margin:5px 0 0;
+  color:#cbd5e1;
+  font-size:14px;
 }
 
-header p {
-  margin: 5px 0 0;
-  color: #cbd5e1;
-  font-size: 14px;
+.container{
+  max-width:1100px;
+  margin:auto;
+  padding:18px;
 }
 
-.container {
-  max-width: 1100px;
-  margin: auto;
-  padding: 18px;
+.dashboard{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
+  margin-bottom:18px;
 }
 
-.dashboard {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-  margin-bottom: 18px;
+.card{
+  background:white;
+  border-radius:12px;
+  padding:16px;
+  box-shadow:0 2px 8px rgba(0,0,0,.06);
 }
 
-.card {
-  background: white;
-  border-radius: 12px;
-  padding: 16px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+.card small{
+  color:#64748b;
+  display:block;
+  margin-bottom:7px;
 }
 
-.card small {
-  color: #64748b;
-  display: block;
-  margin-bottom: 7px;
+.card strong{
+  font-size:22px;
 }
 
-.card strong {
-  font-size: 22px;
+.section{
+  background:white;
+  border-radius:12px;
+  padding:18px;
+  margin-bottom:18px;
+  box-shadow:0 2px 8px rgba(0,0,0,.06);
 }
 
-.section {
-  background: white;
-  border-radius: 12px;
-  padding: 18px;
-  margin-bottom: 18px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+.section h2{
+  margin-top:0;
+  font-size:20px;
 }
 
-.section h2 {
-  margin-top: 0;
-  font-size: 20px;
+.search{
+  width:100%;
+  padding:12px;
+  border:1px solid #d1d5db;
+  border-radius:8px;
+  margin-bottom:12px;
+  font-size:16px;
 }
 
-.search {
-  width: 100%;
-  padding: 12px;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  margin-bottom: 12px;
-  font-size: 16px;
+.stock-list{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
 }
 
-.stock-list {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
+.stock{
+  border:1px solid #e2e8f0;
+  border-radius:10px;
+  padding:14px;
+  cursor:pointer;
+  background:#fff;
 }
 
-.stock {
-  border: 1px solid #e2e8f0;
-  border-radius: 10px;
-  padding: 14px;
-  cursor: pointer;
-  background: #fff;
+.stock:hover{
+  border-color:#64748b;
 }
 
-.stock:hover {
-  border-color: #64748b;
+.stock-symbol{
+  font-size:18px;
+  font-weight:bold;
 }
 
-.stock-symbol {
-  font-size: 18px;
-  font-weight: bold;
+.stock-name{
+  color:#64748b;
+  font-size:13px;
+  margin-top:3px;
 }
 
-.stock-name {
-  color: #64748b;
-  font-size: 13px;
-  margin-top: 3px;
+.stock-price{
+  font-size:20px;
+  font-weight:bold;
+  margin-top:10px;
 }
 
-.stock-price {
-  font-size: 20px;
-  font-weight: bold;
-  margin-top: 10px;
+.stock-change{
+  margin-top:4px;
+  font-size:13px;
 }
 
-.stock-change {
-  margin-top: 4px;
-  font-size: 13px;
+.positive{
+  color:#16a34a;
 }
 
-.positive {
-  color: #16a34a;
+.negative{
+  color:#dc2626;
 }
 
-.negative {
-  color: #dc2626;
+.trade-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
 }
 
-.trade-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-
-label {
-  display: block;
-  font-size: 13px;
-  color: #64748b;
-  margin-bottom: 6px;
+label{
+  display:block;
+  font-size:13px;
+  color:#64748b;
+  margin-bottom:6px;
 }
 
 select,
-input {
-  width: 100%;
-  padding: 12px;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  font-size: 16px;
-  background: white;
+input{
+  width:100%;
+  padding:12px;
+  border:1px solid #d1d5db;
+  border-radius:8px;
+  font-size:16px;
+  background:white;
 }
 
-.buttons {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-top: 12px;
+.buttons{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-top:12px;
 }
 
-button {
-  border: 0;
-  padding: 13px;
-  border-radius: 8px;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
+button{
+  border:0;
+  padding:13px;
+  border-radius:8px;
+  font-size:16px;
+  font-weight:bold;
+  cursor:pointer;
 }
 
-.buy {
-  background: #16a34a;
-  color: white;
+.buy{
+  background:#16a34a;
+  color:white;
 }
 
-.sell {
-  background: #dc2626;
-  color: white;
+.sell{
+  background:#dc2626;
+  color:white;
 }
 
-.reset {
-  background: #111827;
-  color: white;
-  margin-top: 10px;
+.reset{
+  background:#111827;
+  color:white;
+  margin-top:10px;
 }
 
-.disclaimer {
-  background: #fff7ed;
-  border: 1px solid #fed7aa;
-  color: #9a3412;
-  padding: 12px;
-  border-radius: 8px;
-  font-size: 13px;
-  margin-top: 12px;
+.disclaimer{
+  background:#fff7ed;
+  border:1px solid #fed7aa;
+  color:#9a3412;
+  padding:12px;
+  border-radius:8px;
+  font-size:13px;
+  margin-top:12px;
 }
 
-.chart-box {
-  width: 100%;
-  height: 300px;
-  position: relative;
+.chart-box{
+  width:100%;
+  height:300px;
+  position:relative;
 }
 
-canvas {
-  width: 100%;
-  height: 100%;
-  display: block;
+canvas{
+  width:100%;
+  height:100%;
+  display:block;
 }
 
-.chart-title {
-  margin-bottom: 8px;
+.chart-title{
+  margin-bottom:8px;
 }
 
-.portfolio-row {
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-  padding: 12px 0;
-  border-bottom: 1px solid #e5e7eb;
+.portfolio-row{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  padding:12px 0;
+  border-bottom:1px solid #e5e7eb;
 }
 
-.portfolio-row:last-child {
-  border-bottom: 0;
+.portfolio-row:last-child{
+  border-bottom:0;
 }
 
-.history-row {
-  padding: 12px 0;
-  border-bottom: 1px solid #e5e7eb;
+.history-row{
+  padding:12px 0;
+  border-bottom:1px solid #e5e7eb;
 }
 
-.history-row:last-child {
-  border-bottom: 0;
+.history-row:last-child{
+  border-bottom:0;
 }
 
-.empty {
-  color: #64748b;
-  text-align: center;
-  padding: 15px;
+.empty{
+  color:#64748b;
+  text-align:center;
+  padding:15px;
 }
 
-.saved {
-  color: #16a34a;
-  font-size: 13px;
-  margin-top: 8px;
+.saved{
+  color:#16a34a;
+  font-size:13px;
+  margin-top:8px;
 }
 
-@media (max-width: 700px) {
-  .dashboard {
-    grid-template-columns: 1fr;
+@media(max-width:700px){
+  .dashboard{
+    grid-template-columns:1fr;
   }
 
-  .stock-list {
-    grid-template-columns: 1fr 1fr;
+  .stock-list{
+    grid-template-columns:1fr 1fr;
   }
 
-  .trade-grid {
-    grid-template-columns: 1fr;
+  .trade-grid{
+    grid-template-columns:1fr;
   }
 }
 
-@media (max-width: 420px) {
-  .stock-list {
-    grid-template-columns: 1fr;
+@media(max-width:420px){
+  .stock-list{
+    grid-template-columns:1fr;
   }
 }
 </style>
@@ -280,6 +278,7 @@ canvas {
 <div class="container">
 
   <!-- DASHBOARD -->
+
   <div class="dashboard">
 
     <div class="card">
@@ -299,7 +298,9 @@ canvas {
 
   </div>
 
+
   <!-- STOCKS -->
+
   <div class="section">
 
     <h2>Stocks</h2>
@@ -317,15 +318,21 @@ canvas {
 
   </div>
 
+
   <!-- CHART -->
+
   <div class="section">
 
     <div class="chart-title">
+
       <h2 id="chartSymbol">AAPL</h2>
+
       <div id="chartPrice">$256.77</div>
+
       <div id="chartChange" class="positive">
         ▲ +$0.00 (0.00%)
       </div>
+
     </div>
 
     <div class="chart-box">
@@ -334,7 +341,9 @@ canvas {
 
   </div>
 
-  <!-- TRADE -->
+
+  <!-- PLACE TRADE -->
+
   <div class="section">
 
     <h2>Place Trade</h2>
@@ -342,13 +351,20 @@ canvas {
     <div class="trade-grid">
 
       <div>
-        <label for="symbol">Stock</label>
+
+        <label for="symbol">
+          Stock
+        </label>
 
         <select id="symbol"></select>
+
       </div>
 
       <div>
-        <label for="shares">Shares</label>
+
+        <label for="shares">
+          Shares
+        </label>
 
         <input
           id="shares"
@@ -357,61 +373,82 @@ canvas {
           step="1"
           value="1"
         >
+
       </div>
 
     </div>
 
     <div class="buttons">
 
-      <button class="buy" onclick="placeTrade('BUY')">
+      <button
+        class="buy"
+        id="buyButton"
+      >
         BUY
       </button>
 
-      <button class="sell" onclick="placeTrade('SELL')">
+      <button
+        class="sell"
+        id="sellButton"
+      >
         SELL
       </button>
 
     </div>
 
     <div class="disclaimer">
-      This is a paper-trading simulation using virtual money.
-      No real money is involved.
+      This is a paper-trading simulation using
+      virtual money. No real money is involved.
     </div>
 
   </div>
 
+
   <!-- PORTFOLIO -->
+
   <div class="section">
 
     <h2>Your Portfolio</h2>
 
     <div id="portfolio">
-      <div class="empty">No positions yet.</div>
+      <div class="empty">
+        No positions yet.
+      </div>
     </div>
 
   </div>
 
+
   <!-- TRADE HISTORY -->
+
   <div class="section">
 
     <h2>Trade History</h2>
 
     <div id="history">
-      <div class="empty">No trades yet.</div>
+      <div class="empty">
+        No trades yet.
+      </div>
     </div>
 
   </div>
 
+
   <!-- ACCOUNT -->
+
   <div class="section">
 
     <h2>Account</h2>
 
     <div class="saved">
-      ✓ Your paper-trading data is automatically saved on this device.
+      ✓ Your paper-trading data is automatically
+      saved on this device.
     </div>
 
-    <button class="reset" onclick="resetAccount()">
+    <button
+      class="reset"
+      id="resetButton"
+    >
       RESET ACCOUNT
     </button>
 
@@ -419,128 +456,215 @@ canvas {
 
 </div>
 
+
 <script>
 
-/* =========================
+/* =====================================
    MARTIN TRADE
-   ========================= */
+   ===================================== */
 
-const STORAGE_KEY = "martinTradePaperAccount";
+const STORAGE_KEY =
+  "martinTradePaperAccount";
+
+
+/* =====================================
+   DEFAULT STOCKS
+   ===================================== */
 
 const DEFAULT_STOCKS = [
+
   {
-    symbol: "AAPL",
-    name: "Apple",
-    price: 256.77
+    symbol:"AAPL",
+    name:"Apple",
+    price:256.77
   },
+
   {
-    symbol: "MSFT",
-    name: "Microsoft",
-    price: 521.90
+    symbol:"MSFT",
+    name:"Microsoft",
+    price:521.90
   },
+
   {
-    symbol: "NVDA",
-    name: "NVIDIA",
-    price: 180.24
+    symbol:"NVDA",
+    name:"NVIDIA",
+    price:180.24
   },
+
   {
-    symbol: "TSLA",
-    name: "Tesla",
-    price: 447.96
+    symbol:"TSLA",
+    name:"Tesla",
+    price:447.96
   },
+
   {
-    symbol: "AMZN",
-    name: "Amazon",
-    price: 232.11
+    symbol:"AMZN",
+    name:"Amazon",
+    price:232.11
   },
+
   {
-    symbol: "GOOGL",
-    name: "Alphabet",
-    price: 246.85
+    symbol:"GOOGL",
+    name:"Alphabet",
+    price:246.85
   }
+
 ];
 
-/* Make a separate copy of the default stocks */
-let stocks = DEFAULT_STOCKS.map(function(stock) {
-  return {
-    symbol: stock.symbol,
-    name: stock.name,
-    price: stock.price
-  };
-});
 
-/* Account data */
+/* =====================================
+   COPY STOCKS
+   ===================================== */
+
+let stocks =
+  DEFAULT_STOCKS.map(function(stock){
+
+    return {
+      symbol:stock.symbol,
+      name:stock.name,
+      price:stock.price
+    };
+
+  });
+
+
+/* =====================================
+   ACCOUNT VARIABLES
+   ===================================== */
+
 let cash = 10000;
-let startingCash = 10000;
-let holdings = {};
-let trades = [];
 
-/* Chart history */
+let startingCash = 10000;
+
+let holdings = {};
+
+let trades = {};
+
+/* Use an array for trade history */
+trades = [];
+
+
+/* =====================================
+   CHART
+   ===================================== */
+
 let priceHistory = {};
 
-/* Currently selected stock */
 let selectedSymbol = "AAPL";
 
 
-/* =========================
-   HELPER FUNCTIONS
-   ========================= */
+/* =====================================
+   MONEY FORMAT
+   ===================================== */
 
-function money(value) {
-  return "$" + Number(value).toLocaleString("en-US", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  });
+function money(value){
+
+  return "$" +
+    Number(value).toLocaleString(
+      "en-US",
+      {
+        minimumFractionDigits:2,
+        maximumFractionDigits:2
+      }
+    );
+
 }
 
-function getStock(symbol) {
-  return stocks.find(function(stock) {
-    return stock.symbol === symbol;
-  });
+
+/* =====================================
+   FIND STOCK
+   ===================================== */
+
+function getStock(symbol){
+
+  for(
+    let i = 0;
+    i < stocks.length;
+    i++
+  ){
+
+    if(
+      stocks[i].symbol === symbol
+    ){
+
+      return stocks[i];
+
+    }
+
+  }
+
+  return null;
+
 }
 
-function createHistory(price) {
+
+/* =====================================
+   CREATE CHART HISTORY
+   ===================================== */
+
+function createHistory(price){
 
   const history = [];
+
   let value = price;
 
-  for (let i = 0; i < 25; i++) {
+  for(
+    let i = 0;
+    i < 25;
+    i++
+  ){
 
-    value = value + (Math.random() - 0.5) * 2;
+    value +=
+      (Math.random() - 0.5) * 2;
 
-    if (value < 1) {
+    if(value < 1){
       value = 1;
     }
 
     history.push(value);
+
   }
 
-  history[history.length - 1] = price;
+  history[24] = price;
 
   return history;
+
 }
 
 
-/* =========================
+/* =====================================
    SAVE ACCOUNT
-   ========================= */
+   ===================================== */
 
-function saveAccount() {
+function saveAccount(){
 
-  try {
+  try{
 
     const prices = {};
 
-    stocks.forEach(function(stock) {
-      prices[stock.symbol] = stock.price;
+    stocks.forEach(function(stock){
+
+      prices[stock.symbol] =
+        stock.price;
+
     });
 
     const data = {
-      cash: cash,
-      startingCash: startingCash,
-      holdings: holdings,
-      trades: trades,
-      prices: prices
+
+      cash:cash,
+
+      startingCash:
+        startingCash,
+
+      holdings:
+        holdings,
+
+      trades:
+        trades,
+
+      prices:
+        prices
+
     };
 
     localStorage.setItem(
@@ -548,436 +672,636 @@ function saveAccount() {
       JSON.stringify(data)
     );
 
-  } catch (error) {
+  }
 
-    console.log("Save unavailable:", error);
+  catch(error){
+
+    console.log(
+      "Saving unavailable"
+    );
 
   }
+
 }
 
 
-/* =========================
+/* =====================================
    LOAD ACCOUNT
-   ========================= */
+   ===================================== */
 
-function loadAccount() {
+function loadAccount(){
 
-  try {
+  try{
 
-    const saved = localStorage.getItem(STORAGE_KEY);
+    const saved =
+      localStorage.getItem(
+        STORAGE_KEY
+      );
 
-    if (!saved) {
+    if(!saved){
       return;
     }
 
-    const data = JSON.parse(saved);
+    const data =
+      JSON.parse(saved);
 
-    if (
-      typeof data.cash === "number" &&
-      Number.isFinite(data.cash)
-    ) {
-      cash = data.cash;
+    if(
+      typeof data.cash === "number"
+    ){
+
+      cash =
+        data.cash;
+
     }
 
-    if (
-      typeof data.startingCash === "number" &&
-      Number.isFinite(data.startingCash)
-    ) {
-      startingCash = data.startingCash;
+    if(
+      typeof data.startingCash ===
+      "number"
+    ){
+
+      startingCash =
+        data.startingCash;
+
     }
 
-    if (
+    if(
       data.holdings &&
-      typeof data.holdings === "object"
-    ) {
-      holdings = data.holdings;
+      typeof data.holdings ===
+      "object"
+    ){
+
+      holdings =
+        data.holdings;
+
     }
 
-    if (Array.isArray(data.trades)) {
-      trades = data.trades;
+    if(
+      Array.isArray(data.trades)
+    ){
+
+      trades =
+        data.trades;
+
     }
 
-    if (
+    if(
       data.prices &&
-      typeof data.prices === "object"
-    ) {
+      typeof data.prices ===
+      "object"
+    ){
 
-      stocks.forEach(function(stock) {
+      stocks.forEach(
+        function(stock){
 
-        const savedPrice = Number(
-          data.prices[stock.symbol]
-        );
+          const price =
+            Number(
+              data.prices[
+                stock.symbol
+              ]
+            );
 
-        if (
-          Number.isFinite(savedPrice) &&
-          savedPrice > 0
-        ) {
-          stock.price = savedPrice;
+          if(
+            Number.isFinite(price) &&
+            price > 0
+          ){
+
+            stock.price =
+              price;
+
+          }
+
         }
-
-      });
+      );
 
     }
-
-  } catch (error) {
-
-    console.log("Load unavailable:", error);
 
   }
-}
 
+  catch(error){
 
-/* =========================
-   INITIALIZE CHART HISTORY
-   ========================= */
+    console.log(
+      "Loading unavailable"
+    );
 
-function initializeHistory() {
-
-  stocks.forEach(function(stock) {
-
-    priceHistory[stock.symbol] =
-      createHistory(stock.price);
-
-  });
+  }
 
 }
 
 
-/* =========================
-   STOCK SELECT MENU
-   ========================= */
+/* =====================================
+   INITIALIZE HISTORY
+   ===================================== */
 
-function populateStockSelect() {
+function initializeHistory(){
+
+  priceHistory = {};
+
+  stocks.forEach(
+    function(stock){
+
+      priceHistory[
+        stock.symbol
+      ] =
+        createHistory(
+          stock.price
+        );
+
+    }
+  );
+
+}
+
+
+/* =====================================
+   STOCK SELECT
+   ===================================== */
+
+function populateStockSelect(){
 
   const select =
-    document.getElementById("symbol");
+    document.getElementById(
+      "symbol"
+    );
 
   select.innerHTML = "";
 
-  stocks.forEach(function(stock) {
+  stocks.forEach(
+    function(stock){
 
-    const option =
-      document.createElement("option");
+      const option =
+        document.createElement(
+          "option"
+        );
 
-    option.value = stock.symbol;
+      option.value =
+        stock.symbol;
 
-    option.textContent =
-      stock.symbol + " — " + stock.name;
+      option.textContent =
+        stock.symbol +
+        " — " +
+        stock.name;
 
-    select.appendChild(option);
+      select.appendChild(
+        option
+      );
 
-  });
+    }
+  );
 
-  select.value = selectedSymbol;
+  select.value =
+    selectedSymbol;
+
 }
 
 
-/* =========================
+/* =====================================
    STOCK LIST
-   ========================= */
+   ===================================== */
 
-function renderStocks() {
+function renderStocks(){
 
   const list =
-    document.getElementById("stockList");
+    document.getElementById(
+      "stockList"
+    );
 
   const search =
-    document.getElementById("search")
-      .value
-      .toLowerCase()
-      .trim();
+    document.getElementById(
+      "search"
+    ).value
+     .toLowerCase()
+     .trim();
 
   list.innerHTML = "";
 
   const filtered =
-    stocks.filter(function(stock) {
+    stocks.filter(
+      function(stock){
 
-      return (
-        stock.symbol
-          .toLowerCase()
-          .includes(search)
-        ||
-        stock.name
-          .toLowerCase()
-          .includes(search)
-      );
+        return (
 
-    });
+          stock.symbol
+            .toLowerCase()
+            .includes(search)
 
-  if (filtered.length === 0) {
+          ||
+
+          stock.name
+            .toLowerCase()
+            .includes(search)
+
+        );
+
+      }
+    );
+
+
+  if(filtered.length === 0){
 
     list.innerHTML =
-      '<div class="empty">No stocks found.</div>';
-
-    return;
-  }
-
-  filtered.forEach(function(stock) {
-
-    const history =
-      priceHistory[stock.symbol] || [];
-
-    let previousPrice =
-      history.length > 1
-        ? history[history.length - 2]
-        : stock.price;
-
-    let change =
-      stock.price - previousPrice;
-
-    let percent =
-      previousPrice !== 0
-        ? (change / previousPrice) * 100
-        : 0;
-
-    const div =
-      document.createElement("div");
-
-    div.className = "stock";
-
-    div.onclick = function() {
-
-      selectedSymbol = stock.symbol;
-
-      document.getElementById("symbol").value =
-        stock.symbol;
-
-      drawChart();
-
-    };
-
-    const changeClass =
-      change >= 0
-        ? "positive"
-        : "negative";
-
-    const arrow =
-      change >= 0 ? "▲" : "▼";
-
-    div.innerHTML =
-
-      '<div class="stock-symbol">' +
-        stock.symbol +
-      '</div>' +
-
-      '<div class="stock-name">' +
-        stock.name +
-      '</div>' +
-
-      '<div class="stock-price">' +
-        money(stock.price) +
-      '</div>' +
-
-      '<div class="stock-change ' +
-        changeClass +
-      '">' +
-        arrow + " " +
-        (change >= 0 ? "+" : "") +
-        money(change) +
-        " (" +
-        (percent >= 0 ? "+" : "") +
-        percent.toFixed(2) +
-        "%)" +
+      '<div class="empty">' +
+      'No stocks found.' +
       '</div>';
 
-    list.appendChild(div);
+    return;
 
-  });
+  }
+
+
+  filtered.forEach(
+    function(stock){
+
+      const history =
+        priceHistory[
+          stock.symbol
+        ] || [];
+
+      let previous =
+        stock.price;
+
+      if(
+        history.length >= 2
+      ){
+
+        previous =
+          history[
+            history.length - 2
+          ];
+
+      }
+
+      const change =
+        stock.price -
+        previous;
+
+      const percent =
+        previous !== 0
+        ?
+        (change / previous) *
+        100
+        :
+        0;
+
+      const div =
+        document.createElement(
+          "div"
+        );
+
+      div.className =
+        "stock";
+
+      div.onclick =
+        function(){
+
+          selectedSymbol =
+            stock.symbol;
+
+          document.getElementById(
+            "symbol"
+          ).value =
+            stock.symbol;
+
+          drawChart();
+
+        };
+
+
+      const changeClass =
+        change >= 0
+        ?
+        "positive"
+        :
+        "negative";
+
+      const arrow =
+        change >= 0
+        ?
+        "▲"
+        :
+        "▼";
+
+
+      div.innerHTML =
+
+        '<div class="stock-symbol">' +
+          stock.symbol +
+        '</div>' +
+
+        '<div class="stock-name">' +
+          stock.name +
+        '</div>' +
+
+        '<div class="stock-price">' +
+          money(stock.price) +
+        '</div>' +
+
+        '<div class="stock-change ' +
+          changeClass +
+        '">' +
+
+          arrow +
+          " " +
+
+          (change >= 0 ? "+" : "") +
+
+          money(change) +
+
+          " (" +
+
+          (percent >= 0 ? "+" : "") +
+
+          percent.toFixed(2) +
+
+          "%)" +
+
+        '</div>';
+
+
+      list.appendChild(div);
+
+    }
+  );
 
 }
 
 
-/* =========================
+/* =====================================
    DASHBOARD
-   ========================= */
+   ===================================== */
 
-function renderDashboard() {
+function renderDashboard(){
 
-  document.getElementById("cash")
-    .textContent = money(cash);
+  document.getElementById(
+    "cash"
+  ).textContent =
+    money(cash);
+
 
   let portfolioValue = 0;
 
-  Object.keys(holdings).forEach(function(symbol) {
 
-    const shares =
-      Number(holdings[symbol]) || 0;
+  Object.keys(
+    holdings
+  ).forEach(
+    function(symbol){
 
-    const stock =
-      getStock(symbol);
+      const shares =
+        Number(
+          holdings[symbol]
+        ) || 0;
 
-    if (stock) {
+      const stock =
+        getStock(symbol);
 
-      portfolioValue +=
-        shares * stock.price;
+      if(stock){
+
+        portfolioValue +=
+          shares *
+          stock.price;
+
+      }
 
     }
+  );
 
-  });
 
   const totalValue =
-    cash + portfolioValue;
+    cash +
+    portfolioValue;
+
 
   const totalPL =
-    totalValue - startingCash;
+    totalValue -
+    startingCash;
 
-  const plElement =
-    document.getElementById("totalPL");
 
-  document.getElementById("portfolioValue")
-    .textContent = money(totalValue);
+  document.getElementById(
+    "portfolioValue"
+  ).textContent =
+    money(totalValue);
 
-  plElement.textContent =
+
+  const pl =
+    document.getElementById(
+      "totalPL"
+    );
+
+
+  pl.textContent =
     (totalPL >= 0 ? "+" : "") +
     money(totalPL);
 
-  plElement.className =
+
+  pl.className =
     totalPL >= 0
-      ? "positive"
-      : "negative";
+    ?
+    "positive"
+    :
+    "negative";
 
 }
 
 
-/* =========================
+/* =====================================
    PORTFOLIO
-   ========================= */
+   ===================================== */
 
-function renderPortfolio() {
+function renderPortfolio(){
 
   const container =
-    document.getElementById("portfolio");
+    document.getElementById(
+      "portfolio"
+    );
 
   container.innerHTML = "";
+
 
   const symbols =
-    Object.keys(holdings).filter(function(symbol) {
+    Object.keys(
+      holdings
+    ).filter(
+      function(symbol){
 
-      return Number(holdings[symbol]) > 0;
+        return Number(
+          holdings[symbol]
+        ) > 0;
 
-    });
+      }
+    );
 
-  if (symbols.length === 0) {
+
+  if(symbols.length === 0){
 
     container.innerHTML =
-      '<div class="empty">No positions yet.</div>';
-
-    return;
-  }
-
-  symbols.forEach(function(symbol) {
-
-    const shares =
-      Number(holdings[symbol]);
-
-    const stock =
-      getStock(symbol);
-
-    if (!stock) {
-      return;
-    }
-
-    const value =
-      shares * stock.price;
-
-    const row =
-      document.createElement("div");
-
-    row.className =
-      "portfolio-row";
-
-    row.innerHTML =
-
-      '<div>' +
-        '<strong>' +
-          stock.symbol +
-        '</strong><br>' +
-        '<small>' +
-          stock.name +
-        '</small>' +
-      '</div>' +
-
-      '<div style="text-align:right">' +
-        shares +
-        ' shares<br>' +
-        '<strong>' +
-          money(value) +
-        '</strong>' +
+      '<div class="empty">' +
+      'No positions yet.' +
       '</div>';
 
-    container.appendChild(row);
+    return;
 
-  });
+  }
+
+
+  symbols.forEach(
+    function(symbol){
+
+      const shares =
+        Number(
+          holdings[symbol]
+        );
+
+      const stock =
+        getStock(symbol);
+
+      if(!stock){
+        return;
+      }
+
+      const value =
+        shares *
+        stock.price;
+
+
+      const row =
+        document.createElement(
+          "div"
+        );
+
+      row.className =
+        "portfolio-row";
+
+
+      row.innerHTML =
+
+        '<div>' +
+
+          '<strong>' +
+            stock.symbol +
+          '</strong><br>' +
+
+          '<small>' +
+            stock.name +
+          '</small>' +
+
+        '</div>' +
+
+        '<div style="text-align:right">' +
+
+          shares +
+          ' shares<br>' +
+
+          '<strong>' +
+            money(value) +
+          '</strong>' +
+
+        '</div>';
+
+
+      container.appendChild(
+        row
+      );
+
+    }
+  );
 
 }
 
 
-/* =========================
+/* =====================================
    TRADE HISTORY
-   ========================= */
+   ===================================== */
 
-function renderHistory() {
+function renderHistory(){
 
   const container =
-    document.getElementById("history");
+    document.getElementById(
+      "history"
+    );
 
   container.innerHTML = "";
 
-  if (trades.length === 0) {
+
+  if(trades.length === 0){
 
     container.innerHTML =
-      '<div class="empty">No trades yet.</div>';
+      '<div class="empty">' +
+      'No trades yet.' +
+      '</div>';
 
     return;
+
   }
 
-  trades.slice().reverse().forEach(function(trade) {
 
-    const row =
-      document.createElement("div");
+  trades
+    .slice()
+    .reverse()
+    .forEach(
+      function(trade){
 
-    row.className =
-      "history-row";
+        const row =
+          document.createElement(
+            "div"
+          );
 
-    const actionClass =
-      trade.action === "BUY"
-        ? "positive"
-        : "negative";
+        row.className =
+          "history-row";
 
-    row.innerHTML =
 
-      '<strong class="' +
-        actionClass +
-      '">' +
-        trade.action +
-      '</strong> ' +
+        const actionClass =
+          trade.action === "BUY"
+          ?
+          "positive"
+          :
+          "negative";
 
-      trade.shares +
-      ' × ' +
-      trade.symbol +
 
-      '<br>' +
+        row.innerHTML =
 
-      '<small>' +
-        money(trade.price) +
-        ' each • ' +
-        money(trade.total) +
-        '<br>' +
-        trade.time +
-      '</small>';
+          '<strong class="' +
+            actionClass +
+          '">' +
 
-    container.appendChild(row);
+            trade.action +
 
-  });
+          '</strong> ' +
+
+          trade.shares +
+          ' × ' +
+          trade.symbol +
+
+          '<br>' +
+
+          '<small>' +
+
+            money(trade.price) +
+
+            ' each • ' +
+
+            money(trade.total) +
+
+            '<br>' +
+
+            trade.time +
+
+          '</small>';
+
+
+        container.appendChild(
+          row
+        );
+
+      }
+    );
 
 }
 
 
-/* =========================
-   RENDER EVERYTHING
-   ========================= */
+/* =====================================
+   RENDER ALL
+   ===================================== */
 
-function render() {
+function render(){
 
   renderDashboard();
 
@@ -990,84 +1314,119 @@ function render() {
 }
 
 
-/* =========================
+/* =====================================
    PLACE TRADE
-   ========================= */
+   ===================================== */
 
-function placeTrade(action) {
+function placeTrade(action){
 
   const symbol =
-    document.getElementById("symbol").value;
+    document.getElementById(
+      "symbol"
+    ).value;
+
 
   const shares =
     Number(
-      document.getElementById("shares").value
+      document.getElementById(
+        "shares"
+      ).value
     );
+
 
   const stock =
     getStock(symbol);
 
-  if (!stock) {
 
-    alert("Please select a stock.");
+  if(!stock){
+
+    alert(
+      "Please select a stock."
+    );
 
     return;
+
   }
 
-  if (
+
+  if(
     !Number.isFinite(shares) ||
     shares <= 0
-  ) {
+  ){
 
-    alert("Please enter a valid number of shares.");
+    alert(
+      "Please enter a valid number of shares."
+    );
 
     return;
+
   }
 
+
   const total =
-    stock.price * shares;
+    stock.price *
+    shares;
+
 
   /* BUY */
-  if (action === "BUY") {
 
-    if (total > cash) {
+  if(action === "BUY"){
+
+    if(total > cash){
 
       alert(
         "Not enough virtual cash for this trade."
       );
 
       return;
+
     }
+
 
     cash -= total;
 
+
     holdings[symbol] =
-      (Number(holdings[symbol]) || 0) +
+      (Number(
+        holdings[symbol]
+      ) || 0) +
       shares;
 
   }
 
+
   /* SELL */
-  if (action === "SELL") {
 
-    const currentShares =
-      Number(holdings[symbol]) || 0;
+  if(action === "SELL"){
 
-    if (shares > currentShares) {
+    const owned =
+      Number(
+        holdings[symbol]
+      ) || 0;
+
+
+    if(shares > owned){
 
       alert(
         "You do not own enough shares to sell."
       );
 
       return;
+
     }
+
 
     cash += total;
 
-    holdings[symbol] =
-      currentShares - shares;
 
-    if (holdings[symbol] <= 0) {
+    holdings[symbol] =
+      owned -
+      shares;
+
+
+    if(
+      holdings[symbol] <= 0
+    ){
 
       delete holdings[symbol];
 
@@ -1075,21 +1434,25 @@ function placeTrade(action) {
 
   }
 
+
   trades.push({
 
-    action: action,
+    action:action,
 
-    symbol: symbol,
+    symbol:symbol,
 
-    shares: shares,
+    shares:shares,
 
-    price: stock.price,
+    price:stock.price,
 
-    total: total,
+    total:total,
 
-    time: new Date().toLocaleString()
+    time:
+      new Date()
+        .toLocaleString()
 
   });
+
 
   saveAccount();
 
@@ -1097,6 +1460,259 @@ function placeTrade(action) {
 
   drawChart();
 
+
   alert(
+
     action +
-    " order
+    " order completed for " +
+    shares +
+    " " +
+    symbol +
+    " share(s)."
+
+  );
+
+}
+
+
+/* =====================================
+   DRAW CHART
+   ===================================== */
+
+function drawChart(){
+
+  const canvas =
+    document.getElementById(
+      "priceChart"
+    );
+
+  const box =
+    canvas.parentElement;
+
+  const ctx =
+    canvas.getContext("2d");
+
+
+  if(!ctx){
+    return;
+  }
+
+
+  const width =
+    box.clientWidth || 300;
+
+  const height =
+    box.clientHeight || 300;
+
+
+  const dpr =
+    window.devicePixelRatio || 1;
+
+
+  canvas.width =
+    width * dpr;
+
+  canvas.height =
+    height * dpr;
+
+
+  canvas.style.width =
+    width + "px";
+
+  canvas.style.height =
+    height + "px";
+
+
+  ctx.setTransform(
+    dpr,
+    0,
+    0,
+    dpr,
+    0,
+    0
+  );
+
+
+  ctx.clearRect(
+    0,
+    0,
+    width,
+    height
+  );
+
+
+  const stock =
+    getStock(
+      selectedSymbol
+    );
+
+
+  if(!stock){
+    return;
+  }
+
+
+  let data =
+    priceHistory[
+      selectedSymbol
+    ];
+
+
+  if(
+    !Array.isArray(data) ||
+    data.length < 2
+  ){
+
+    data =
+      createHistory(
+        stock.price
+      );
+
+    priceHistory[
+      selectedSymbol
+    ] =
+      data;
+
+  }
+
+
+  document.getElementById(
+    "chartSymbol"
+  ).textContent =
+    stock.symbol;
+
+
+  document.getElementById(
+    "chartPrice"
+  ).textContent =
+    money(stock.price);
+
+
+  const first =
+    data[0];
+
+  const last =
+    data[
+      data.length - 1
+    ];
+
+
+  const change =
+    last - first;
+
+
+  const percent =
+    first !== 0
+    ?
+    (change / first) * 100
+    :
+    0;
+
+
+  const changeElement =
+    document.getElementById(
+      "chartChange"
+    );
+
+
+  changeElement.textContent =
+
+    (change >= 0 ? "▲ +" : "▼ ") +
+
+    money(change) +
+
+    " (" +
+
+    (percent >= 0 ? "+" : "") +
+
+    percent.toFixed(2) +
+
+    "%)";
+
+
+  changeElement.className =
+    change >= 0
+    ?
+    "positive"
+    :
+    "negative";
+
+
+  /* Chart dimensions */
+
+  const padding = 25;
+
+  const chartWidth =
+    width -
+    padding * 2;
+
+  const chartHeight =
+    height -
+    padding * 2;
+
+
+  const min =
+    Math.min.apply(
+      null,
+      data
+    );
+
+
+  const max =
+    Math.max.apply(
+      null,
+      data
+    );
+
+
+  const range =
+    Math.max(
+      0.5,
+      max - min
+    );
+
+
+  const chartMin =
+    min -
+    range * 0.10;
+
+
+  const chartMax =
+    max +
+    range * 0.10;
+
+
+  const chartRange =
+    chartMax -
+    chartMin;
+
+
+  /* Grid */
+
+  ctx.lineWidth = 1;
+
+  ctx.strokeStyle =
+    "#e5e7eb";
+
+
+  for(
+    let i = 0;
+    i <= 5;
+    i++
+  ){
+
+    const y =
+      padding +
+      (chartHeight / 5) *
+      i;
+
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+      padding,
+      y
+    );
+
+    ctx.lineTo(
+      width - padding,
