@@ -2,297 +2,66 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Martin Trade — Paper Trading</title><style>
+<title>Martin Trade — Paper Trading</title>
+<style>
 *{box-sizing:border-box}
-
-body{
-margin:0;
-font-family:Arial,sans-serif;
-background:#f5f7fb;
-color:#172033
-}
-
-header{
-background:#111827;
-color:white;
-padding:18px 20px
-}
-
-header h1{
-margin:0;
-font-size:25px
-}
-
-header p{
-margin:6px 0 0;
-color:#cbd5e1;
-font-size:13px
-}
-
-.container{
-max-width:1100px;
-margin:auto;
-padding:18px
-}
-
-.dashboard{
-display:grid;
-grid-template-columns:repeat(3,1fr);
-gap:12px;
-margin-bottom:18px
-}
-
-.card{
-background:white;
-border-radius:12px;
-padding:16px;
-box-shadow:0 2px 8px rgba(0,0,0,.06)
-}
-
-.label{
-font-size:12px;
-color:#64748b;
-margin-bottom:7px
-}
-
-.value{
-font-size:22px;
-font-weight:bold
-}
-
-.section{
-margin-bottom:18px
-}
-
-.section h2{
-font-size:18px;
-margin:0 0 12px
-}
-
-.search{
-width:100%;
-padding:12px;
-border:1px solid #d1d5db;
-border-radius:8px;
-font-size:15px;
-margin-bottom:12px
-}
-
-.stocks{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-gap:12px
-}
-
-.stock{
-background:white;
-border-radius:12px;
-padding:15px;
-box-shadow:0 2px 8px rgba(0,0,0,.06)
-}
-
-.stock-top{
-display:flex;
-justify-content:space-between;
-align-items:center
-}
-
-.symbol{
-font-weight:bold;
-font-size:18px
-}
-
-.company{
-font-size:12px;
-color:#64748b;
-margin-top:3px
-}
-
-.price{
-font-size:20px;
-font-weight:bold;
-margin-top:14px
-}
-
-.change{
-font-size:13px;
-margin-top:5px
-}
-
-.positive{
-color:#15803d
-}
-
-.negative{
-color:#b91c1c
-}
-
-.trade-box{
-background:white;
-border-radius:12px;
-padding:16px;
-box-shadow:0 2px 8px rgba(0,0,0,.06)
-}
-
-.form-grid{
-display:grid;
-grid-template-columns:1fr 1fr auto;
-gap:10px
-}
-
-select,input,button{
-font:inherit
-}
-
-select,input{
-width:100%;
-padding:11px;
-border:1px solid #d1d5db;
-border-radius:8px;
-background:white
-}
-
-.buttons{
-display:flex;
-gap:8px
-}
-
-button{
-border:0;
-border-radius:8px;
-padding:11px 18px;
-font-weight:bold;
-cursor:pointer
-}
-
-.buy{
-background:#16a34a;
-color:white
-}
-
-.sell{
-background:#dc2626;
-color:white
-}
-
-.reset{
-background:#111827;
-color:white
-}
-
-.notice{
-font-size:12px;
-color:#64748b;
-margin-top:10px
-}
-
-.chart-wrap{
-background:white;
-border-radius:12px;
-padding:15px;
-box-shadow:0 2px 8px rgba(0,0,0,.06)
-}
-
-canvas{
-width:100%;
-height:280px;
-display:block
-}
-
-table{
-width:100%;
-border-collapse:collapse;
-background:white;
-border-radius:12px;
-overflow:hidden
-}
-
-th,td{
-padding:12px 10px;
-text-align:left;
-border-bottom:1px solid #e5e7eb;
-font-size:13px
-}
-
-th{
-background:#f8fafc
-}
-
-.empty{
-background:white;
-border-radius:12px;
-padding:22px;
-text-align:center;
-color:#64748b
-}
-
-.account{
-display:flex;
-justify-content:space-between;
-align-items:center;
-gap:12px
-}
-
-.stats-grid{
-display:grid;
-grid-template-columns:repeat(4,1fr);
-gap:12px
-}
-
-.stat-card{
-background:white;
-border-radius:12px;
-padding:16px;
-box-shadow:0 2px 8px rgba(0,0,0,.06)
-}
-
-.stat-title{
-font-size:12px;
-color:#64748b;
-margin-bottom:8px
-}
-
-.stat-value{
-font-size:22px;
-font-weight:bold
-}
-
+body{margin:0;font-family:Arial,sans-serif;background:#f5f7fb;color:#172033}
+header{background:#111827;color:white;padding:18px 20px}
+header h1{margin:0;font-size:25px}
+header p{margin:6px 0 0;color:#cbd5e1;font-size:13px}
+.container{max-width:1100px;margin:auto;padding:18px}
+.dashboard{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px}
+.card{background:white;border-radius:12px;padding:16px;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.label{font-size:12px;color:#64748b;margin-bottom:7px}
+.value{font-size:22px;font-weight:bold}
+.section{margin-bottom:18px}
+.section h2{font-size:18px;margin:0 0 12px}
+.search{width:100%;padding:12px;border:1px solid #d1d5db;border-radius:8px;font-size:15px;margin-bottom:12px}
+.stocks{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.stock{background:white;border-radius:12px;padding:15px;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.stock-top{display:flex;justify-content:space-between;align-items:center}
+.symbol{font-weight:bold;font-size:18px}
+.company{font-size:12px;color:#64748b;margin-top:3px}
+.price{font-size:20px;font-weight:bold;margin-top:14px}
+.change{font-size:13px;margin-top:5px}
+.positive{color:#15803d}
+.negative{color:#b91c1c}
+.trade-box{background:white;border-radius:12px;padding:16px;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.form-grid{display:grid;grid-template-columns:1fr 1fr auto;gap:10px}
+select,input,button{font:inherit}
+select,input{width:100%;padding:11px;border:1px solid #d1d5db;border-radius:8px;background:white}
+.buttons{display:flex;gap:8px}
+button{border:0;border-radius:8px;padding:11px 18px;font-weight:bold;cursor:pointer}
+.buy{background:#16a34a;color:white}
+.sell{background:#dc2626;color:white}
+.reset{background:#111827;color:white}
+.notice{font-size:12px;color:#64748b;margin-top:10px}
+.chart-wrap{background:white;border-radius:12px;padding:15px;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+canvas{width:100%;height:280px;display:block}
+table{width:100%;border-collapse:collapse;background:white;border-radius:12px;overflow:hidden}
+th,td{padding:12px 10px;text-align:left;border-bottom:1px solid #e5e7eb;font-size:13px}
+th{background:#f8fafc}
+.empty{background:white;border-radius:12px;padding:22px;text-align:center;color:#64748b}
+.account{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.stat-card{background:white;border-radius:12px;padding:16px;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.stat-title{font-size:12px;color:#64748b;margin-bottom:8px}
+.stat-value{font-size:22px;font-weight:bold}
 @media(max-width:700px){
-
-.dashboard{
-grid-template-columns:1fr
+.dashboard{grid-template-columns:1fr}
+.stats-grid{grid-template-columns:1fr 1fr}
+.form-grid{grid-template-columns:1fr}
+.buttons button{flex:1}
+.account{flex-direction:column;align-items:stretch}
 }
-
-.stats-grid{
-grid-template-columns:1fr 1fr
-}
-
-.form-grid{
-grid-template-columns:1fr
-}
-
-.buttons button{
-flex:1
-}
-
-.account{
-flex-direction:column;
-align-items:stretch
-}
-
-}
-
 @media(max-width:420px){
-
-.stats-grid{
-grid-template-columns:1fr
+.stats-grid{grid-template-columns:1fr}
 }
-
-}
-</style></head><body><header>
+</style>
+</head><body><header>
 <h1>Martin Trade</h1>
 <p>PAPER TRADING • VIRTUAL MONEY</p>
-</header><div class="container"><!-- DASHBOARD --><div class="dashboard"><div class="card">
+</header><div class="container"><div class="dashboard"><div class="card">
 <div class="label">Virtual Cash</div>
 <div class="value" id="cash">$10,000.00</div>
 </div><div class="card">
@@ -301,7 +70,7 @@ grid-template-columns:1fr
 </div><div class="card">
 <div class="label">Total P/L</div>
 <div class="value" id="totalPL">$0.00</div>
-</div></div><!-- STOCKS --><div class="section"><h2>Stocks</h2><input
+</div></div><div class="section"><h2>Stocks</h2><input
 id="search"
 class="search"
 type="text"
@@ -309,9 +78,9 @@ placeholder="Search stocks..."
 
 «»
 
-<div id="stocks" class="stocks"></div></div><!-- CHART --><div class="section"><h2>Chart</h2><div class="chart-wrap">
+<div id="stocks" class="stocks"></div></div><div class="section"><h2>Chart</h2><div class="chart-wrap">
 <canvas id="chart"></canvas>
-</div></div><!-- TRADE --><div class="section"><h2>Place Trade</h2><div class="trade-box"><div class="form-grid"><div><label class="label">Stock</label>
+</div></div><div class="section"><h2>Place Trade</h2><div class="trade-box"><div class="form-grid"><div><label class="label">Stock</label>
 
 <select id="symbol"></select>
 
@@ -326,31 +95,27 @@ value="1"
 
 «»
 
-</div><div class="buttons"><button class="buy" id="buy">
-BUY
-</button><button class="sell" id="sell">
-SELL
-</button></div></div><div class="notice">
+</div><div class="buttons"><button class="buy" id="buy">BUY</button>
+
+<button class="sell" id="sell">SELL</button>
+
+</div></div><div class="notice">
 Paper trading only. No real money is used.
-</div></div></div><!-- PORTFOLIO --><div class="section"><h2>Your Portfolio</h2><div id="portfolio"></div></div><!-- TRADE HISTORY --><div class="section"><h2>Trade History</h2><div id="history"></div></div><!-- STATISTICS --><div class="section"><h2>Trading Statistics</h2><div class="stats-grid"><div class="stat-card"><div class="stat-title">
-Total Trades
-</div><div class="stat-value" id="statTrades">
-0
-</div></div><div class="stat-card"><div class="stat-title">
-Winning Trades
-</div><div class="stat-value positive" id="statWins">
-0
-</div></div><div class="stat-card"><div class="stat-title">
-Losing Trades
-</div><div class="stat-value negative" id="statLosses">
-0
-</div></div><div class="stat-card"><div class="stat-title">
-Win Rate
-</div><div class="stat-value" id="statWinRate">
-0%
-</div></div></div></div><!-- ACCOUNT --><div class="section"><h2>Account</h2><div class="card account"><div><strong>
-Automatic save enabled
-</strong><div class="notice">
+</div></div></div><div class="section"><h2>Your Portfolio</h2><div id="portfolio"></div></div><div class="section"><h2>Trade History</h2><div id="history"></div></div><div class="section"><h2>Trading Statistics</h2><div class="stats-grid"><div class="stat-card">
+<div class="stat-title">Total Trades</div>
+<div class="stat-value" id="statTrades">0</div>
+</div><div class="stat-card">
+<div class="stat-title">Winning Trades</div>
+<div class="stat-value positive" id="statWins">0</div>
+</div><div class="stat-card">
+<div class="stat-title">Losing Trades</div>
+<div class="stat-value negative" id="statLosses">0</div>
+</div><div class="stat-card">
+<div class="stat-title">Win Rate</div>
+<div class="stat-value" id="statWinRate">0%</div>
+</div></div></div><div class="section"><h2>Account</h2><div class="card account"><div><strong>Automatic save enabled</strong>
+
+<div class="notice">
 Your paper-trading account is saved on this device.
 </div></div><button class="reset" id="reset">
 RESET ACCOUNT
@@ -358,41 +123,21 @@ RESET ACCOUNT
 
 const DEFAULT_CASH = 10000;
 
-
 const stocks = {
 
-AAPL:{
-name:"Apple",
-price:256.77
-},
+AAPL:{name:"Apple",price:256.77},
 
-MSFT:{
-name:"Microsoft",
-price:521.90
-},
+MSFT:{name:"Microsoft",price:521.90},
 
-NVDA:{
-name:"NVIDIA",
-price:180.24
-},
+NVDA:{name:"NVIDIA",price:180.24},
 
-TSLA:{
-name:"Tesla",
-price:447.96
-},
+TSLA:{name:"Tesla",price:447.96},
 
-AMZN:{
-name:"Amazon",
-price:232.11
-},
+AMZN:{name:"Amazon",price:232.11},
 
-GOOGL:{
-name:"Alphabet",
-price:246.85
-}
+GOOGL:{name:"Alphabet",price:246.85}
 
 };
-
 
 let cash = DEFAULT_CASH;
 
@@ -425,9 +170,7 @@ prices[symbol]*(0.97+Math.random()*0.06)
 
 }
 
-historyPrices[symbol].push(
-prices[symbol]
-);
+historyPrices[symbol].push(prices[symbol]);
 
 }
 
@@ -443,14 +186,12 @@ try{
 localStorage.setItem(
 "martinTrade",
 JSON.stringify({
-
 cash,
 startingCash,
 holdings,
 trades,
 prices,
 historyPrices
-
 })
 );
 
@@ -464,26 +205,20 @@ function load(){
 try{
 
 const saved=
-JSON.parse(
-localStorage.getItem("martinTrade")
-);
+JSON.parse(localStorage.getItem("martinTrade"));
 
 if(saved){
 
-cash=
-saved.cash ?? DEFAULT_CASH;
+cash=saved.cash ?? DEFAULT_CASH;
 
 startingCash=
 saved.startingCash ?? DEFAULT_CASH;
 
-holdings=
-saved.holdings ?? {};
+holdings=saved.holdings ?? {};
 
-trades=
-saved.trades ?? [];
+trades=saved.trades ?? [];
 
-prices=
-saved.prices ?? {};
+prices=saved.prices ?? {};
 
 historyPrices=
 saved.historyPrices ?? {};
@@ -541,7 +276,8 @@ document.getElementById("cash")
 .textContent=money(cash);
 
 document.getElementById("portfolioValue")
-.textContent=money(portfolioValue());
+.textContent=
+money(portfolioValue());
 
 const pl=totalPL();
 
@@ -552,8 +288,7 @@ el.textContent=
 (pl>=0?"+":"")+money(pl);
 
 el.className=
-"value "+
-(pl>=0?"positive":"negative");
+"value "+(pl>=0?"positive":"negative");
 
 }
 
@@ -581,15 +316,14 @@ term &&
 
 const old=
 historyPrices[symbol]
-[
-historyPrices[symbol].length-2
-] || prices[symbol];
+[historyPrices[symbol].length-2]
+||prices[symbol];
 
 const change=
 prices[symbol]-old;
 
 const pct=
-old ? change/old*100 : 0;
+old?change/old*100:0;
 
 const div=
 document.createElement("div");
@@ -602,13 +336,9 @@ div.innerHTML=`
 
 <div>
 
-<div class="symbol">
-${symbol}
-</div>
+<div class="symbol">${symbol}</div>
 
-<div class="company">
-${s.name}
-</div>
+<div class="company">${s.name}</div>
 
 </div>
 
@@ -628,7 +358,6 @@ ${money(change)}
 (${change>=0?"+":""}${pct.toFixed(2)}%)
 
 </div>
-
 `;
 
 box.appendChild(div);
@@ -643,8 +372,7 @@ function renderSelect(){
 const select=
 document.getElementById("symbol");
 
-const current=
-select.value;
+const current=select.value;
 
 select.innerHTML="";
 
@@ -662,13 +390,8 @@ select.appendChild(option);
 
 });
 
-if(
-current &&
-stocks[current]
-){
-
+if(current && stocks[current]){
 select.value=current;
-
 }
 
 }
@@ -681,9 +404,7 @@ document.getElementById("portfolio");
 
 const symbols=
 Object.keys(holdings)
-.filter(
-s=>holdings[s].shares>0
-);
+.filter(s=>holdings[s].shares>0);
 
 if(!symbols.length){
 
@@ -694,7 +415,6 @@ return;
 
 }
 
-
 let html=`
 
 <table>
@@ -702,20 +422,17 @@ let html=`
 <thead>
 
 <tr>
-
 <th>Stock</th>
 <th>Shares</th>
 <th>Avg Price</th>
 <th>Value</th>
 <th>P/L</th>
-
 </tr>
 
 </thead>
 
 <tbody>
 `;
-
 
 symbols.forEach(symbol=>{
 
@@ -733,44 +450,29 @@ html+=`
 <tr>
 
 <td>
-
 <strong>${symbol}</strong>
-
 <br>
-
 <span class="company">
 ${stocks[symbol].name}
 </span>
-
 </td>
 
-<td>
-${h.shares}
-</td>
+<td>${h.shares}</td>
 
-<td>
-${money(h.avgPrice)}
-</td>
+<td>${money(h.avgPrice)}</td>
 
-<td>
-${money(value)}
-</td>
+<td>${money(value)}</td>
 
 <td class="${
 pl>=0?"positive":"negative"
 }">
-
-${pl>=0?"+":""}
-${money(pl)}
-
+${pl>=0?"+":""}${money(pl)}
 </td>
 
 </tr>
-
 `;
 
 });
-
 
 html+=`
 </tbody>
@@ -796,7 +498,6 @@ return;
 
 }
 
-
 let html=`
 
 <table>
@@ -804,14 +505,12 @@ let html=`
 <thead>
 
 <tr>
-
 <th>Time</th>
 <th>Action</th>
 <th>Stock</th>
 <th>Shares</th>
 <th>Price</th>
 <th>Total</th>
-
 </tr>
 
 </thead>
@@ -819,53 +518,32 @@ let html=`
 <tbody>
 `;
 
-
-[...trades]
-.reverse()
-.forEach(t=>{
+[...trades].reverse().forEach(t=>{
 
 html+=`
 
 <tr>
 
-<td>
-${t.time}
-</td>
+<td>${t.time}</td>
 
 <td class="${
-t.action==="BUY"
-?"positive"
-:"negative"
+t.action==="BUY"?"positive":"negative"
 }">
-
-<strong>
-${t.action}
-</strong>
-
+<strong>${t.action}</strong>
 </td>
 
-<td>
-${t.symbol}
-</td>
+<td>${t.symbol}</td>
 
-<td>
-${t.shares}
-</td>
+<td>${t.shares}</td>
 
-<td>
-${money(t.price)}
-</td>
+<td>${money(t.price)}</td>
 
-<td>
-${money(t.total)}
-</td>
+<td>${money(t.total)}</td>
 
 </tr>
-
 `;
 
 });
-
 
 html+=`
 </tbody>
@@ -898,30 +576,24 @@ const total=
 completed.length;
 
 const winRate=
-total
-?
-wins.length/total*100
-:
+total?
+wins.length/total*100:
 0;
-
 
 document.getElementById(
 "statTrades"
 ).textContent=
 trades.length;
 
-
 document.getElementById(
 "statWins"
 ).textContent=
 wins.length;
 
-
 document.getElementById(
 "statLosses"
 ).textContent=
 losses.length;
-
 
 document.getElementById(
 "statWinRate"
@@ -934,23 +606,16 @@ winRate.toFixed(1)+"%";
 function trade(action){
 
 const symbol=
-document.getElementById("symbol")
-.value;
+document.getElementById("symbol").value;
 
 const shares=
 Math.floor(
 Number(
-document.getElementById("shares")
-.value
+document.getElementById("shares").value
 )
 );
 
-
-if(
-!symbol ||
-!shares ||
-shares<1
-){
+if(!symbol || !shares || shares<1){
 
 alert(
 "Please enter a valid number of shares."
@@ -960,29 +625,22 @@ return;
 
 }
 
+const price=prices[symbol];
 
-const price=
-prices[symbol];
-
-const total=
-price*shares;
+const total=price*shares;
 
 
 if(action==="BUY"){
 
 if(total>cash){
 
-alert(
-"Not enough virtual cash."
-);
+alert("Not enough virtual cash.");
 
 return;
 
 }
 
-
 cash-=total;
-
 
 if(!holdings[symbol]){
 
@@ -993,9 +651,7 @@ avgPrice:0
 
 }
 
-
-const h=
-holdings[symbol];
+const h=holdings[symbol];
 
 const oldCost=
 h.shares*h.avgPrice;
@@ -1005,10 +661,20 @@ h.shares+=shares;
 h.avgPrice=
 (oldCost+total)/h.shares;
 
-}
+trades.push({
 
+time:new Date().toLocaleString(),
 
-else{
+action,
+symbol,
+shares,
+price,
+total,
+profit:0
+
+});
+
+}else{
 
 if(
 !holdings[symbol] ||
@@ -1023,9 +689,7 @@ return;
 
 }
 
-
-const h=
-holdings[symbol];
+const h=holdings[symbol];
 
 const profit=
 (price-h.avgPrice)*shares;
@@ -1034,18 +698,15 @@ cash+=total;
 
 h.shares-=shares;
 
-
 if(h.shares===0){
 
 delete holdings[symbol];
 
 }
 
-
 trades.push({
 
-time:
-new Date().toLocaleString(),
+time:new Date().toLocaleString(),
 
 action,
 symbol,
@@ -1056,28 +717,7 @@ profit
 
 });
 
-save();
-
-renderAll();
-
-return;
-
 }
-
-
-trades.push({
-
-time:
-new Date().toLocaleString(),
-
-action,
-symbol,
-shares,
-price,
-total,
-profit:0
-
-});
 
 save();
 
@@ -1098,7 +738,7 @@ const rect=
 canvas.getBoundingClientRect();
 
 const dpr=
-window.devicePixelRatio || 1;
+window.devicePixelRatio||1;
 
 canvas.width=
 rect.width*dpr;
@@ -1110,9 +750,7 @@ ctx.setTransform(
 dpr,0,0,dpr,0,0
 );
 
-
-const width=
-rect.width;
+const width=rect.width;
 
 const height=280;
 
@@ -1124,95 +762,62 @@ width-padding*2;
 const chartHeight=
 height-padding*2;
 
-
 const symbol=
 document.getElementById("symbol")
-.value || "AAPL";
+.value||"AAPL";
 
 const data=
-historyPrices[symbol] ||
+historyPrices[symbol]||
 [prices[symbol]];
 
+let min=Math.min(...data);
 
-let min=
-Math.min(...data);
-
-let max=
-Math.max(...data);
-
+let max=Math.max(...data);
 
 if(max===min){
 
 max+=1;
-
 min-=1;
 
 }
-
 
 ctx.clearRect(
 0,0,width,height
 );
 
-
 ctx.strokeStyle="#e5e7eb";
 
 ctx.lineWidth=1;
 
-
-for(
-let i=0;
-i<=5;
-i++
-){
+for(let i=0;i<=5;i++){
 
 const y=
-padding+
-(chartHeight/5)*i;
+padding+(chartHeight/5)*i;
 
 ctx.beginPath();
 
-ctx.moveTo(
-padding,
-y
-);
+ctx.moveTo(padding,y);
 
-ctx.lineTo(
-width-padding,
-y
-);
+ctx.lineTo(width-padding,y);
 
 ctx.stroke();
 
 }
 
-
-for(
-let i=0;
-i<=6;
-i++
-){
+for(let i=0;i<=6;i++){
 
 const x=
-padding+
-(chartWidth/6)*i;
+padding+(chartWidth/6)*i;
 
 ctx.beginPath();
 
-ctx.moveTo(
-x,
-padding
-);
+ctx.moveTo(x,padding);
 
-ctx.lineTo(
-x,
-height-padding
-);
+ctx.lineTo(x,height-padding);
 
 ctx.stroke();
 
 }
-
 
 ctx.strokeStyle="#2563eb";
 
@@ -1220,19 +825,16 @@ ctx.lineWidth=2.5;
 
 ctx.beginPath();
 
-
 data.forEach((value,i)=>{
 
 const x=
 padding+
-(i/(data.length-1))
-*chartWidth;
+(i/(data.length-1))*chartWidth;
 
 const y=
 padding+
 (1-(value-min)/(max-min))
 *chartHeight;
-
 
 if(i===0){
 
@@ -1246,36 +848,27 @@ ctx.lineTo(x,y);
 
 });
 
-
 ctx.stroke();
-
 
 const last=
 data[data.length-1];
 
-const lx=
-width-padding;
+const lx=width-padding;
 
 const ly=
 padding+
 (1-(last-min)/(max-min))
 *chartHeight;
 
-
 ctx.fillStyle="#2563eb";
 
 ctx.beginPath();
 
 ctx.arc(
-lx,
-ly,
-5,
-0,
-Math.PI*2
+lx,ly,5,0,Math.PI*2
 );
 
 ctx.fill();
-
 
 ctx.fillStyle="#172033";
 
@@ -1295,8 +888,7 @@ function renderAll(){
 renderDashboard();
 
 renderStocks(
-document.getElementById("search")
-.value
+document.getElementById("search").value
 );
 
 renderSelect();
@@ -1325,19 +917,15 @@ Math.max(
 prices[symbol]*(1+movement)
 );
 
-
 if(!historyPrices[symbol]){
 
 historyPrices[symbol]=[];
 
 }
 
-
-historyPrices[symbol]
-.push(
+historyPrices[symbol].push(
 prices[symbol]
 );
-
 
 if(
 historyPrices[symbol].length>40
@@ -1348,7 +936,6 @@ historyPrices[symbol].shift();
 }
 
 });
-
 
 save();
 
@@ -1361,42 +948,36 @@ document.getElementById("search")
 .addEventListener(
 "input",
 e=>{
-
-renderStocks(
-e.target.value
+renderStocks(e.target.value);
+}
 );
-
-});
 
 
 document.getElementById("symbol")
 .addEventListener(
 "change",
 ()=>{
-
 drawChart();
-
-});
+}
+);
 
 
 document.getElementById("buy")
 .addEventListener(
 "click",
 ()=>{
-
 trade("BUY");
-
-});
+}
+);
 
 
 document.getElementById("sell")
 .addEventListener(
 "click",
 ()=>{
-
 trade("SELL");
-
-});
+}
+);
 
 
 document.getElementById("reset")
@@ -1410,12 +991,9 @@ if(
 )
 )return;
 
+cash=DEFAULT_CASH;
 
-cash=
-DEFAULT_CASH;
-
-startingCash=
-DEFAULT_CASH;
+startingCash=DEFAULT_CASH;
 
 holdings={};
 
@@ -1425,7 +1003,6 @@ prices={};
 
 historyPrices={};
 
-
 try{
 
 localStorage.removeItem(
@@ -1434,14 +1011,14 @@ localStorage.removeItem(
 
 }catch(e){}
 
-
 clonePrices();
 
 save();
 
 renderAll();
 
-});
+}
+);
 
 
 window.addEventListener(
@@ -1454,7 +1031,6 @@ window.addEventListener(
 save
 );
 
-
 load();
 
 renderAll();
@@ -1465,4 +1041,4 @@ updatePrices,
 );
 
 </script></body>
-                                     </html>
+  </html>
