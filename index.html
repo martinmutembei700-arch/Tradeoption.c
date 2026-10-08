@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Martin Trade</title>
-
 <style>
 body{font-family:Arial;margin:0;background:#f4f6f8;color:#172033}
 header{background:#111827;color:white;padding:18px;text-align:center}
@@ -14,6 +13,7 @@ input,select,button{width:100%;padding:12px;margin:6px 0;box-sizing:border-box;b
 button{border:0;color:white;font-weight:bold}
 .buy{background:#16a34a}.sell{background:#dc2626}.reset{background:#555}
 .stock{display:inline-block;width:44%;padding:8px}
+canvas{width:100%;height:250px;border:1px solid #ddd;border-radius:8px}
 </style>
 </head>
 
@@ -39,9 +39,8 @@ button{border:0;color:white;font-weight:bold}
 </div>
 
 <div class="card">
-<h2>Place Trade</h2>
-
-<select id="symbol">
+<h2>Price Chart</h2>
+<select id="chartStock" onchange="drawChart()">
 <option>AAPL</option>
 <option>MSFT</option>
 <option>NVDA</option>
@@ -49,9 +48,16 @@ button{border:0;color:white;font-weight:bold}
 <option>AMZN</option>
 <option>GOOGL</option>
 </select>
+<canvas id="chart"></canvas>
+</div>
 
+<div class="card">
+<h2>Place Trade</h2>
+<select id="symbol">
+<option>AAPL</option><option>MSFT</option><option>NVDA</option>
+<option>TSLA</option><option>AMZN</option><option>GOOGL</option>
+</select>
 <input id="shares" type="number" min="1" value="1">
-
 <button class="buy" onclick="trade('BUY')">BUY</button>
 <button class="sell" onclick="trade('SELL')">SELL</button>
 </div>
@@ -78,85 +84,58 @@ let prices={
  AAPL:256.77,MSFT:521.90,NVDA:180.24,
  TSLA:447.96,AMZN:232.11,GOOGL:246.85
 };
-let holdings={};
-let trades=[];
+let holdings={},trades={},history={};
 
-function money(n){
- return Number(n).toFixed(2);
-}
+for(let s in prices)history[s]=[prices[s]];
+
+function money(n){return Number(n).toFixed(2)}
 
 function render(){
-
  document.getElementById("cash").textContent=money(cash);
 
  let value=0;
-
- for(let s in holdings)
-   value+=holdings[s]*prices[s];
+ for(let s in holdings)value+=holdings[s]*prices[s];
 
  let portfolio=cash+value;
-
  document.getElementById("portfolio").textContent=money(portfolio);
  document.getElementById("profit").textContent=money(portfolio-10000);
 
  let stocks="";
-
  for(let s in prices)
-   stocks+=`<div class="stock"><b>${s}</b><br>$${money(prices[s])}</div>`;
-
+ stocks+=`<div class="stock"><b>${s}</b><br>$${money(prices[s])}</div>`;
  document.getElementById("stocks").innerHTML=stocks;
 
  let p="";
-
- for(let s in holdings)
-   p+=`${s}: ${holdings[s]} shares<br>`;
-
+ for(let s in holdings)p+=`${s}: ${holdings[s]} shares<br>`;
  document.getElementById("portfolioList").innerHTML=p||"No positions";
 
  let h="";
-
  trades.slice().reverse().forEach(t=>{
    h+=`${t.action} ${t.shares} ${t.symbol} @ $${money(t.price)}<br>`;
  });
-
  document.getElementById("history").innerHTML=h||"No trades";
 
  save();
+ drawChart();
 }
 
 function trade(action){
-
  let symbol=document.getElementById("symbol").value;
  let shares=Number(document.getElementById("shares").value);
  let price=prices[symbol];
 
- if(shares<1){
-   alert("Enter at least 1 share");
-   return;
- }
+ if(shares<1)return alert("Enter at least 1 share");
 
  if(action==="BUY"){
-
-   if(price*shares>cash){
-     alert("Not enough cash");
-     return;
-   }
-
+   if(price*shares>cash)return alert("Not enough cash");
    cash-=price*shares;
    holdings[symbol]=(holdings[symbol]||0)+shares;
-
  }else{
-
-   if(!holdings[symbol]||holdings[symbol]<shares){
-     alert("You don't own enough shares");
-     return;
-   }
-
+   if(!holdings[symbol]||holdings[symbol]<shares)
+   return alert("You don't own enough shares");
    cash+=price*shares;
    holdings[symbol]-=shares;
-
-   if(holdings[symbol]===0)
-     delete holdings[symbol];
+   if(!holdings[symbol])delete holdings[symbol];
  }
 
  trades.push({action,symbol,shares,price});
@@ -164,53 +143,69 @@ function trade(action){
 }
 
 function updatePrices(){
-
  for(let s in prices){
-   prices[s]=Math.max(
-     1,
-     prices[s]+(Math.random()-.5)*2
-   );
+   prices[s]=Math.max(1,prices[s]+(Math.random()-.5)*2);
+   history[s].push(prices[s]);
+   if(history[s].length>40)history[s].shift();
  }
-
  render();
 }
 
-function save(){
+function drawChart(){
+ let c=document.getElementById("chart"),x=c.getContext("2d");
+ let s=document.getElementById("chartStock").value;
+ let a=history[s];
 
+ c.width=c.clientWidth;
+ c.height=250;
+
+ x.clearRect(0,0,c.width,c.height);
+
+ let min=Math.min(...a),max=Math.max(...a);
+ let range=max-min||1;
+
+ x.beginPath();
+
+ a.forEach((v,i)=>{
+   let px=i*(c.width/(a.length-1));
+   let py=c.height-20-((v-min)/range)*(c.height-40);
+   i?x.lineTo(px,py):x.moveTo(px,py);
+ });
+
+ x.strokeStyle="#2563eb";
+ x.lineWidth=3;
+ x.stroke();
+}
+
+function save(){
  localStorage.setItem("martinTrade",
- JSON.stringify({
-   cash,holdings,trades
- }));
+ JSON.stringify({cash,holdings,trades,prices,history}));
 }
 
 function load(){
-
- let data=localStorage.getItem("martinTrade");
-
- if(data){
-   data=JSON.parse(data);
-   cash=data.cash;
-   holdings=data.holdings;
-   trades=data.trades;
+ let d=localStorage.getItem("martinTrade");
+ if(d){
+   d=JSON.parse(d);
+   cash=d.cash;
+   holdings=d.holdings;
+   trades=d.trades||[];
+   prices=d.prices||prices;
+   history=d.history||history;
  }
 }
 
 function resetAccount(){
-
  if(confirm("Reset your account?")){
-
    cash=10000;
    holdings={};
    trades=[];
-
    localStorage.removeItem("martinTrade");
-   render();
+   location.reload();
  }
 }
 
 load();
 render();
-
 setInterval(updatePrices,5000);
 </script>
 
