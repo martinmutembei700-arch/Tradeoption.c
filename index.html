@@ -1,943 +1,418 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#0f172a">
-<title>Martin Trade — Paper Trading</title>
-
-<style>
-*{box-sizing:border-box}
-
-body{
-  margin:0;
-  font-family:Arial,sans-serif;
-  background:#f4f7fb;
-  color:#172033
-}
-
-header{
-  background:#0f172a;
-  color:white;
-  padding:18px 20px
-}
-
-header h1{
-  margin:0;
-  font-size:25px
-}
-
-header p{
-  margin:5px 0;
-  color:#cbd5e1;
-  font-size:13px
-}
-
-.status{
-  display:inline-block;
-  margin-top:10px;
-  padding:6px 10px;
-  border-radius:20px;
-  background:#064e3b;
-  color:#6ee7b7;
-  font-size:12px
-}
-
-.container{
-  max-width:1200px;
-  margin:auto;
-  padding:18px
-}
-
-.summary{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:12px;
-  margin-bottom:18px
-}
-
-.card,.panel{
-  background:white;
-  border-radius:14px;
-  padding:16px;
-  box-shadow:0 2px 10px rgba(15,23,42,.07)
-}
-
-.card h3{
-  margin:0 0 7px;
-  font-size:13px;
-  color:#64748b
-}
-
-.value{
-  font-size:24px;
-  font-weight:700
-}
-
-.positive{color:#059669}
-.negative{color:#dc2626}
-
-.section-title{
-  margin:22px 0 10px;
-  font-size:18px
-}
-
-.markets{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:10px
-}
-
-.market{
-  background:white;
-  border:2px solid transparent;
-  border-radius:13px;
-  padding:14px;
-  cursor:pointer;
-  box-shadow:0 2px 8px rgba(15,23,42,.05)
-}
-
-.market.active{
-  border-color:#2563eb
-}
-
-.market-top{
-  display:flex;
-  justify-content:space-between
-}
-
-.symbol{
-  font-size:17px;
-  font-weight:700
-}
-
-.company{
-  font-size:12px;
-  color:#64748b;
-  margin-top:3px
-}
-
-.price{
-  font-weight:700;
-  font-size:16px
-}
-
-.change{
-  font-size:12px;
-  margin-top:4px
-}
-
-.trade-grid{
-  display:grid;
-  grid-template-columns:1.35fr .9fr;
-  gap:14px;
-  margin-top:18px
-}
-
-.panel h2{
-  margin:0 0 14px;
-  font-size:18px
-}
-
-.chart-wrap{
-  height:220px;
-  background:#f8fafc;
-  border-radius:10px;
-  padding:8px
-}
-
-canvas{
-  width:100%;
-  height:100%
-}
-
-.trade-info{
-  display:flex;
-  justify-content:space-between;
-  margin-bottom:12px;
-  padding:10px;
-  background:#f8fafc;
-  border-radius:10px
-}
-
-label{
-  display:block;
-  font-size:13px;
-  color:#64748b;
-  margin:12px 0 6px
-}
-
-input{
-  width:100%;
-  padding:12px;
-  border:1px solid #cbd5e1;
-  border-radius:9px;
-  font-size:16px
-}
-
-.buttons{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:10px;
-  margin-top:14px
-}
-
-button{
-  border:0;
-  border-radius:9px;
-  padding:12px;
-  font-size:15px;
-  font-weight:700;
-  cursor:pointer
-}
-
-.buy{
-  background:#059669;
-  color:white
-}
-
-.sell{
-  background:#dc2626;
-  color:white
-}
-
-.secondary{
-  background:#e2e8f0;
-  color:#172033;
-  width:100%;
-  margin-top:10px
-}
-
-.note{
-  font-size:12px;
-  color:#64748b;
-  margin-top:10px;
-  line-height:1.4
-}
-
-.table-wrap{
-  overflow-x:auto
-}
-
-table{
-  width:100%;
-  border-collapse:collapse;
-  font-size:13px
-}
-
-th,td{
-  text-align:left;
-  padding:10px;
-  border-bottom:1px solid #e2e8f0;
-  white-space:nowrap
-}
-
-th{
-  color:#64748b;
-  font-size:12px
-}
-
-.empty{
-  text-align:center;
-  color:#64748b;
-  padding:20px
-}
-
-.toast{
-  position:fixed;
-  left:50%;
-  bottom:20px;
-  transform:translateX(-50%);
-  background:#0f172a;
-  color:white;
-  padding:12px 16px;
-  border-radius:10px;
-  display:none;
-  z-index:5
-}
-
-@media(max-width:800px){
-  .summary{
-    grid-template-columns:1fr
-  }
-
-  .markets{
-    grid-template-columns:repeat(2,1fr)
-  }
-
-  .trade-grid{
-    grid-template-columns:1fr
-  }
-}
-
-@media(max-width:480px){
-  .container{
-    padding:12px
-  }
-
-  .market{
-    padding:11px
-  }
-
-  .value{
-    font-size:21px
-  }
-}
-</style>
-</head>
-
-<body>
-
-<header>
-  <div class="container" style="padding:0">
-    <h1>Martin Trade</h1>
-    <p>Paper Trading Simulator — Simulated Market</p>
-    <span class="status">● Market Open · Simulation</span>
-  </div>
-</header>
-
-<main class="container">
-
-<section class="summary">
-
-<div class="card">
-<h3>Available Cash</h3>
-<div id="cash" class="value">$10,000.00</div>
-</div>
-
-<div class="card">
-<h3>Equity</h3>
-<div id="equity" class="value">$10,000.00</div>
-</div>
-
-<div class="card">
-<h3>Total P/L</h3>
-<div id="pnl" class="value">$0.00</div>
-</div>
-
-</section>
-
-<h2 class="section-title">Markets</h2>
-
-<section id="markets" class="markets"></section>
-
-<section class="trade-grid">
-
-<div class="panel">
-
-<h2 id="chartTitle">AAPL — Apple Inc.</h2>
-
-<div class="chart-wrap">
-<canvas id="chart"></canvas>
-</div>
-
-<div class="trade-info" style="margin-top:12px">
-<span>
-Position:
-<strong id="position">0</strong> shares
-</span>
-
-<span>
-Value:
-<strong id="positionValue">$0.00</strong>
-</span>
-</div>
-
-</div>
-
-<div class="panel">
-
-<h2>Place Trade</h2>
-
-<div class="trade-info">
-<span id="selectedSymbol">AAPL</span>
-<strong id="selectedPrice">$222.23</strong>
-</div>
-
-<label for="quantity">
-Quantity (shares)
-</label>
-
-<input
-id="quantity"
-type="number"
-min="1"
-step="1"
-value="1"
->
-
-<div class="buttons">
-
-<button
-class="buy"
-onclick="trade('buy')">
-BUY
-</button>
-
-<button
-class="sell"
-onclick="trade('sell')">
-SELL
-</button>
-
-</div>
-
-<button
-class="secondary"
-onclick="resetAccount()">
-Reset Account
-</button>
-
-<div class="note">
-Paper trading only. No real money or real orders are involved.
-</div>
-
-</div>
-
-</section>
-
-<section
-class="panel"
-style="margin-top:18px">
-
-<h2>Trade History</h2>
-
-<div class="table-wrap">
-
-<table>
-
-<thead>
-
-<tr>
-<th>Time</th>
-<th>Action</th>
-<th>Symbol</th>
-<th>Shares</th>
-<th>Price</th>
-<th>Total</th>
-</tr>
-
-</thead>
-
-<tbody id="history">
-
-<tr>
-<td colspan="6" class="empty">
-No trades yet.
-</td>
-</tr>
-
-</tbody>
-
-</table>
-
-</div>
-
-</section>
-
-</main>
-
-<div id="toast" class="toast"></div>
-
 <script>
-
-const initialPrices={
-AAPL:222.23,
-MSFT:507.53,
-NVDA:173.85,
-TSLA:444.93,
-AMZN:214.69,
-GOOGL:260.05
+const initialPrices = {
+  AAPL: 222.23,
+  MSFT: 507.53,
+  NVDA: 173.85,
+  TSLA: 444.93,
+  AMZN: 214.69,
+  GOOGL: 260.05
 };
 
-const names={
-AAPL:'Apple Inc.',
-MSFT:'Microsoft Corp.',
-NVDA:'NVIDIA Corp.',
-TSLA:'Tesla Inc.',
-AMZN:'Amazon.com Inc.',
-GOOGL:'Alphabet Inc.'
+const names = {
+  AAPL: "Apple Inc.",
+  MSFT: "Microsoft Corp.",
+  NVDA: "NVIDIA Corp.",
+  TSLA: "Tesla Inc.",
+  AMZN: "Amazon.com Inc.",
+  GOOGL: "Alphabet Inc."
 };
 
-let prices={...initialPrices};
+let prices = {...initialPrices};
+let cash = 10000;
 
-let cash=10000;
-
-let positions={
-AAPL:0,
-MSFT:0,
-NVDA:0,
-TSLA:0,
-AMZN:0,
-GOOGL:0
+let positions = {
+  AAPL: 0,
+  MSFT: 0,
+  NVDA: 0,
+  TSLA: 0,
+  AMZN: 0,
+  GOOGL: 0
 };
 
-let history=[];
+let history = [];
+let selected = "AAPL";
+let series = {};
 
-let selected='AAPL';
+const marketsEl = document.getElementById("markets");
+const cashEl = document.getElementById("cash");
+const equityEl = document.getElementById("equity");
+const pnlEl = document.getElementById("pnl");
+const chartEl = document.getElementById("chart");
+const chartTitleEl = document.getElementById("chartTitle");
+const positionEl = document.getElementById("position");
+const positionValueEl = document.getElementById("positionValue");
+const selectedSymbolEl = document.getElementById("selectedSymbol");
+const selectedPriceEl = document.getElementById("selectedPrice");
+const quantityEl = document.getElementById("quantity");
+const historyEl = document.getElementById("history");
+const toastEl = document.getElementById("toast");
 
-let series={};
+function makeSeries(base) {
+  const values = [];
+  let price = base;
 
+  for (let i = 0; i < 30; i++) {
+    price *= 1 + (Math.random() - 0.48) * 0.012;
+    values.push(price);
+  }
 
-function makeSeries(base){
-
-let a=[];
-let p=base;
-
-for(let i=0;i<30;i++){
-
-p*=1+(Math.random()-.48)*.012;
-
-a.push(p);
-
+  values[29] = base;
+  return values;
 }
 
-a[29]=base;
-
-return a;
-
-}
-
-
-Object.keys(prices).forEach(
-s=>series[s]=makeSeries(prices[s])
-);
-
-
-function money(n){
-
-return '$'+Number(n).toLocaleString(
-'en-US',
-{
-minimumFractionDigits:2,
-maximumFractionDigits:2
-}
-);
-
-}
-
-
-function renderMarkets(){
-
-markets.innerHTML=Object.keys(prices).map(s=>{
-
-let ch=
-(prices[s]-initialPrices[s])
-/initialPrices[s]*100;
-
-return `
-<div
-class="market ${s===selected?'active':''}"
-onclick="selectStock('${s}')">
-
-<div class="market-top">
-
-<div>
-
-<div class="symbol">
-${s}
-</div>
-
-<div class="company">
-${names[s]}
-</div>
-
-</div>
-
-<div class="price">
-${money(prices[s])}
-</div>
-
-</div>
-
-<div
-class="change ${ch>=0?'positive':'negative'}">
-
-${ch>=0?'+':''}${ch.toFixed(2)}%
-
-</div>
-
-</div>
-`;
-
-}).join('');
-
-}
-
-
-function selectStock(s){
-
-selected=s;
-
-chartTitle.textContent=
-s+' — '+names[s];
-
-selectedSymbol.textContent=s;
-
-selectedPrice.textContent=
-money(prices[s]);
-
-renderMarkets();
-
-render();
-
-}
-
-
-function accountValue(){
-
-return Object.keys(positions)
-.reduce(
-(t,s)=>t+positions[s]*prices[s],
-cash
-);
-
-}
-
-
-function render(){
-
-let e=accountValue();
-
-let p=e-10000;
-
-cashEl.textContent=money(cash);
-
-equity.textContent=money(e);
-
-pnl.textContent=
-(p>=0?'+':'')+money(p);
-
-pnl.className=
-'value '+(p>=0?'positive':'negative');
-
-position.textContent=
-positions[selected];
-
-positionValue.textContent=
-money(
-positions[selected]*prices[selected]
-);
-
-selectedPrice.textContent=
-money(prices[selected]);
-
-renderHistory();
-
-drawChart();
-
-}
-
-
-function trade(action){
-
-let q=
-Math.floor(
-Number(quantity.value)
-);
-
-let total=
-q*prices[selected];
-
-if(!q||q<1){
-
-showToast(
-'Enter a valid quantity'
-);
-
-return;
-
-}
-
-
-if(action==='buy'){
-
-if(total>cash){
-
-showToast(
-'Not enough cash'
-);
-
-return;
-
-}
-
-cash-=total;
-
-positions[selected]+=q;
-
-}else{
-
-if(q>positions[selected]){
-
-showToast(
-'Not enough shares to sell'
-);
-
-return;
-
-}
-
-cash+=total;
-
-positions[selected]-=q;
-
-}
-
-
-history.unshift({
-
-time:
-new Date().toLocaleTimeString(),
-
-action:
-action.toUpperCase(),
-
-symbol:selected,
-
-qty:q,
-
-price:prices[selected],
-
-total
-
+Object.keys(prices).forEach(symbol => {
+  series[symbol] = makeSeries(prices[symbol]);
 });
 
-
-save();
-
-render();
-
-showToast(
-action==='buy'
-?'Buy order simulated'
-:'Sell order simulated'
-);
-
+function money(value) {
+  return "$" + Number(value).toLocaleString("en-US", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
 }
 
+function renderMarkets() {
+  marketsEl.innerHTML = Object.keys(prices).map(symbol => {
 
-function renderHistory(){
+    const change =
+      ((prices[symbol] - initialPrices[symbol]) /
+      initialPrices[symbol]) * 100;
 
-historyEl.innerHTML=
+    return `
+      <div class="market ${symbol === selected ? "active" : ""}"
+           data-symbol="${symbol}">
 
-history.length
+        <div class="market-top">
 
-?
+          <div>
+            <div class="symbol">${symbol}</div>
+            <div class="company">${names[symbol]}</div>
+          </div>
 
-history.map(x=>`
+          <div class="price">
+            ${money(prices[symbol])}
+          </div>
 
-<tr>
+        </div>
 
-<td>${x.time}</td>
+        <div class="change ${change >= 0 ? "positive" : "negative"}">
+          ${change >= 0 ? "+" : ""}${change.toFixed(2)}%
+        </div>
 
-<td
-class="${x.action==='BUY'
-?'positive'
-:'negative'}">
+      </div>
+    `;
 
-${x.action}
+  }).join("");
 
-</td>
-
-<td>${x.symbol}</td>
-
-<td>${x.qty}</td>
-
-<td>${money(x.price)}</td>
-
-<td>${money(x.total)}</td>
-
-</tr>
-
-`).join('')
-
-:
-
-`
-<tr>
-<td colspan="6" class="empty">
-No trades yet.
-</td>
-</tr>
-`;
-
+  document.querySelectorAll(".market").forEach(card => {
+    card.addEventListener("click", function() {
+      selectStock(this.dataset.symbol);
+    });
+  });
 }
 
+function selectStock(symbol) {
+  selected = symbol;
 
-function drawChart(){
+  chartTitleEl.textContent =
+    symbol + " — " + names[symbol];
 
-let c=chart;
+  selectedSymbolEl.textContent = symbol;
+  selectedPriceEl.textContent = money(prices[symbol]);
 
-let box=c.parentElement;
+  renderMarkets();
+  render();
+}
 
-let d=devicePixelRatio||1;
+function accountValue() {
+  let total = cash;
 
-let w=box.clientWidth-16;
+  Object.keys(positions).forEach(symbol => {
+    total += positions[symbol] * prices[symbol];
+  });
 
-let h=box.clientHeight-16;
+  return total;
+}
 
-c.width=w*d;
+function render() {
 
-c.height=h*d;
+  const equity = accountValue();
+  const profitLoss = equity - 10000;
 
-let x=c.getContext('2d');
+  cashEl.textContent = money(cash);
+  equityEl.textContent = money(equity);
 
-x.scale(d,d);
+  pnlEl.textContent =
+    (profitLoss >= 0 ? "+" : "") + money(profitLoss);
 
-let a=series[selected];
+  pnlEl.className =
+    "value " + (profitLoss >= 0 ? "positive" : "negative");
 
-let mn=Math.min(...a);
+  positionEl.textContent = positions[selected];
 
-let mx=Math.max(...a);
+  positionValueEl.textContent =
+    money(positions[selected] * prices[selected]);
 
-let r=mx-mn||1;
+  selectedPriceEl.textContent =
+    money(prices[selected]);
 
-x.beginPath();
+  renderHistory();
+  drawChart();
+}
 
-a.forEach((v,i)=>{
+function trade(action) {
 
-let xx=
-i*w/(a.length-1);
+  const quantity =
+    Math.floor(Number(quantityEl.value));
 
-let yy=
-h-10-
-(v-mn)/r*
-(h-20);
+  if (!quantity || quantity < 1) {
+    showToast("Enter a valid quantity");
+    return;
+  }
 
-i
-?x.lineTo(xx,yy)
-:x.moveTo(xx,yy);
+  const price = prices[selected];
+  const total = quantity * price;
 
+  if (action === "buy") {
+
+    if (total > cash) {
+      showToast("Not enough cash");
+      return;
+    }
+
+    cash -= total;
+    positions[selected] += quantity;
+
+  } else {
+
+    if (quantity > positions[selected]) {
+      showToast("Not enough shares to sell");
+      return;
+    }
+
+    cash += total;
+    positions[selected] -= quantity;
+  }
+
+  history.unshift({
+    time: new Date().toLocaleTimeString(),
+    action: action.toUpperCase(),
+    symbol: selected,
+    qty: quantity,
+    price: price,
+    total: total
+  });
+
+  save();
+  render();
+
+  if (action === "buy") {
+    showToast("BUY order simulated");
+  } else {
+    showToast("SELL order simulated");
+  }
+}
+
+function renderHistory() {
+
+  if (history.length === 0) {
+
+    historyEl.innerHTML = `
+      <tr>
+        <td colspan="6" class="empty">
+          No trades yet.
+        </td>
+      </tr>
+    `;
+
+    return;
+  }
+
+  historyEl.innerHTML = history.map(tradeItem => `
+    <tr>
+
+      <td>${tradeItem.time}</td>
+
+      <td class="${tradeItem.action === "BUY"
+        ? "positive"
+        : "negative"}">
+        ${tradeItem.action}
+      </td>
+
+      <td>${tradeItem.symbol}</td>
+
+      <td>${tradeItem.qty}</td>
+
+      <td>${money(tradeItem.price)}</td>
+
+      <td>${money(tradeItem.total)}</td>
+
+    </tr>
+  `).join("");
+}
+
+function drawChart() {
+
+  const canvas = chartEl;
+  const box = canvas.parentElement;
+
+  const dpr = window.devicePixelRatio || 1;
+
+  const width = Math.max(100, box.clientWidth - 16);
+  const height = Math.max(100, box.clientHeight - 16);
+
+  canvas.width = width * dpr;
+  canvas.height = height * dpr;
+
+  const ctx = canvas.getContext("2d");
+
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+  ctx.clearRect(0, 0, width, height);
+
+  const data = series[selected];
+
+  const min = Math.min(...data);
+  const max = Math.max(...data);
+
+  const range = max - min || 1;
+
+  ctx.beginPath();
+
+  data.forEach((value, index) => {
+
+    const x =
+      index * width / (data.length - 1);
+
+    const y =
+      height - 10 -
+      ((value - min) / range) *
+      (height - 20);
+
+    if (index === 0) {
+      ctx.moveTo(x, y);
+    } else {
+      ctx.lineTo(x, y);
+    }
+
+  });
+
+  ctx.strokeStyle = "#2563eb";
+  ctx.lineWidth = 2;
+  ctx.stroke();
+}
+
+function save() {
+
+  localStorage.setItem(
+    "martinTrade",
+    JSON.stringify({
+      cash: cash,
+      positions: positions,
+      history: history
+    })
+  );
+}
+
+function load() {
+
+  try {
+
+    const saved =
+      JSON.parse(
+        localStorage.getItem("martinTrade")
+      );
+
+    if (saved) {
+
+      if (typeof saved.cash === "number") {
+        cash = saved.cash;
+      }
+
+      if (saved.positions) {
+        positions = {
+          ...positions,
+          ...saved.positions
+        };
+      }
+
+      if (Array.isArray(saved.history)) {
+        history = saved.history;
+      }
+    }
+
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+function resetAccount() {
+
+  if (!confirm(
+    "Reset the paper-trading account to $10,000?"
+  )) {
+    return;
+  }
+
+  cash = 10000;
+
+  positions = {
+    AAPL: 0,
+    MSFT: 0,
+    NVDA: 0,
+    TSLA: 0,
+    AMZN: 0,
+    GOOGL: 0
+  };
+
+  history = [];
+
+  save();
+  render();
+
+  showToast("Account reset");
+}
+
+function showToast(message) {
+
+  toastEl.textContent = message;
+  toastEl.style.display = "block";
+
+  clearTimeout(window.toastTimer);
+
+  window.toastTimer = setTimeout(function() {
+    toastEl.style.display = "none";
+  }, 2200);
+}
+
+/* BUTTONS */
+
+const buyButton =
+  document.querySelector(".buy");
+
+const sellButton =
+  document.querySelector(".sell");
+
+const resetButton =
+  document.querySelector(".secondary");
+
+buyButton.addEventListener("click", function() {
+  trade("buy");
 });
 
-x.strokeStyle='#2563eb';
+sellButton.addEventListener("click", function() {
+  trade("sell");
+});
 
-x.lineWidth=2;
+resetButton.addEventListener("click", function() {
+  resetAccount();
+});
 
-x.stroke();
-
-}
-
-
-function save(){
-
-localStorage.setItem(
-'martinTrade',
-JSON.stringify({
-cash,
-positions,
-history
-})
-);
-
-}
-
-
-function load(){
-
-try{
-
-let x=
-JSON.parse(
-localStorage.getItem(
-'martinTrade'
-)
-);
-
-if(x){
-
-cash=x.cash;
-
-positions=x.positions;
-
-history=x.history||[];
-
-}
-
-}catch(e){}
-
-}
-
-
-function resetAccount(){
-
-if(
-confirm(
-'Reset the paper-trading account to $10,000?'
-)
-){
-
-cash=10000;
-
-positions={
-AAPL:0,
-MSFT:0,
-NVDA:0,
-TSLA:0,
-AMZN:0,
-GOOGL:0
-};
-
-history=[];
-
-save();
-
-render();
-
-showToast(
-'Account reset'
-);
-
-}
-
-}
-
-
-function showToast(m){
-
-toast.textContent=m;
-
-toast.style.display='block';
-
-clearTimeout(window.tt);
-
-window.tt=setTimeout(
-()=>toast.style.display='none',
-2200
-);
-
-}
-
-
-const markets=
-document.getElementById(
-'markets'
-);
-
-const cashEl=
-document.getElementById(
-'cash'
-);
-
-const historyEl=
-document.getElementById(
-'history'
-);
-
+/* START APP */
 
 load();
-
 renderMarkets();
-
 render();
 
-window.addEventListener(
-'resize',
-drawChart
-);
-
-</script>
-
-</body>
-</html>
+window.addEventListener("resize", drawChart);
+                                               </script>
