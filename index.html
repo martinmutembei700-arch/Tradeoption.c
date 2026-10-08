@@ -6,61 +6,14 @@
 <title>Martin Trade</title>
 
 <style>
-body{
-  font-family:Arial;
-  background:#f4f6f8;
-  margin:0;
-  color:#172033;
-}
-header{
-  background:#111827;
-  color:white;
-  padding:18px;
-  text-align:center;
-}
-.container{
-  max-width:700px;
-  margin:auto;
-  padding:15px;
-}
-.card{
-  background:white;
-  padding:18px;
-  margin:12px 0;
-  border-radius:12px;
-  box-shadow:0 2px 8px #ddd;
-}
-input,select,button{
-  width:100%;
-  padding:12px;
-  margin:6px 0;
-  box-sizing:border-box;
-  border-radius:7px;
-  border:1px solid #ccc;
-}
-button{
-  border:0;
-  color:white;
-  font-weight:bold;
-  cursor:pointer;
-}
-.buy{background:#16a34a}
-.sell{background:#dc2626}
-.reset{background:#555}
-.stock{
-  display:inline-block;
-  width:45%;
-  margin:5px;
-}
-table{
-  width:100%;
-  border-collapse:collapse;
-}
-td,th{
-  padding:8px;
-  border-bottom:1px solid #ddd;
-  text-align:left;
-}
+body{font-family:Arial;margin:0;background:#f4f6f8;color:#172033}
+header{background:#111827;color:white;padding:18px;text-align:center}
+main{max-width:700px;margin:auto;padding:15px}
+.card{background:white;padding:18px;margin:12px 0;border-radius:12px;box-shadow:0 2px 8px #ddd}
+input,select,button{width:100%;padding:12px;margin:6px 0;box-sizing:border-box;border-radius:7px;border:1px solid #ccc}
+button{border:0;color:white;font-weight:bold}
+.buy{background:#16a34a}.sell{background:#dc2626}.reset{background:#555}
+.stock{display:inline-block;width:44%;padding:8px}
 </style>
 </head>
 
@@ -71,7 +24,7 @@ td,th{
 <p>Paper Trading • Virtual Money</p>
 </header>
 
-<div class="container">
+<main>
 
 <div class="card">
 <h2>Account</h2>
@@ -117,22 +70,14 @@ td,th{
 <button class="reset" onclick="resetAccount()">Reset Account</button>
 </div>
 
-</div>
+</main>
 
 <script>
-
 let cash=10000;
-let startingCash=10000;
-
 let prices={
- AAPL:256.77,
- MSFT:521.90,
- NVDA:180.24,
- TSLA:447.96,
- AMZN:232.11,
- GOOGL:246.85
+ AAPL:256.77,MSFT:521.90,NVDA:180.24,
+ TSLA:447.96,AMZN:232.11,GOOGL:246.85
 };
-
 let holdings={};
 let trades=[];
 
@@ -144,38 +89,29 @@ function render(){
 
  document.getElementById("cash").textContent=money(cash);
 
- let stockValue=0;
+ let value=0;
 
- for(let s in holdings){
-   stockValue+=holdings[s].shares*prices[s];
- }
+ for(let s in holdings)
+   value+=holdings[s]*prices[s];
 
- let portfolio=cash+stockValue;
- let profit=portfolio-startingCash;
+ let portfolio=cash+value;
 
  document.getElementById("portfolio").textContent=money(portfolio);
- document.getElementById("profit").textContent=money(profit);
+ document.getElementById("profit").textContent=money(portfolio-10000);
 
  let stocks="";
 
- for(let s in prices){
-   stocks+=`
-   <div class="stock">
-   <b>${s}</b><br>
-   $${money(prices[s])}
-   </div>`;
- }
+ for(let s in prices)
+   stocks+=`<div class="stock"><b>${s}</b><br>$${money(prices[s])}</div>`;
 
  document.getElementById("stocks").innerHTML=stocks;
 
  let p="";
 
- for(let s in holdings){
-   p+=`${s}: ${holdings[s].shares} shares<br>`;
- }
+ for(let s in holdings)
+   p+=`${s}: ${holdings[s]} shares<br>`;
 
- document.getElementById("portfolioList").innerHTML=
-   p || "No positions";
+ document.getElementById("portfolioList").innerHTML=p||"No positions";
 
  let h="";
 
@@ -183,8 +119,9 @@ function render(){
    h+=`${t.action} ${t.shares} ${t.symbol} @ $${money(t.price)}<br>`;
  });
 
- document.getElementById("history").innerHTML=
-   h || "No trades";
+ document.getElementById("history").innerHTML=h||"No trades";
+
+ save();
 }
 
 function trade(action){
@@ -200,59 +137,50 @@ function trade(action){
 
  if(action==="BUY"){
 
-   let cost=price*shares;
-
-   if(cost>cash){
+   if(price*shares>cash){
      alert("Not enough cash");
      return;
    }
 
-   cash-=cost;
+   cash-=price*shares;
+   holdings[symbol]=(holdings[symbol]||0)+shares;
 
-   if(!holdings[symbol]){
-     holdings[symbol]={shares:0};
-   }
+ }else{
 
-   holdings[symbol].shares+=shares;
- }
-
- else{
-
-   if(!holdings[symbol] ||
-      holdings[symbol].shares<shares){
-
+   if(!holdings[symbol]||holdings[symbol]<shares){
      alert("You don't own enough shares");
      return;
    }
 
    cash+=price*shares;
-   holdings[symbol].shares-=shares;
+   holdings[symbol]-=shares;
 
-   if(holdings[symbol].shares===0){
+   if(holdings[symbol]===0)
      delete holdings[symbol];
-   }
  }
 
- trades.push({
-   action:action,
-   symbol:symbol,
-   shares:shares,
-   price:price
- });
+ trades.push({action,symbol,shares,price});
+ render();
+}
 
- save();
+function updatePrices(){
+
+ for(let s in prices){
+   prices[s]=Math.max(
+     1,
+     prices[s]+(Math.random()-.5)*2
+   );
+ }
+
  render();
 }
 
 function save(){
- localStorage.setItem(
-   "martinTrade",
-   JSON.stringify({
-     cash:cash,
-     holdings:holdings,
-     trades:trades
-   })
- );
+
+ localStorage.setItem("martinTrade",
+ JSON.stringify({
+   cash,holdings,trades
+ }));
 }
 
 function load(){
@@ -271,11 +199,11 @@ function resetAccount(){
 
  if(confirm("Reset your account?")){
 
-   cash=startingCash;
+   cash=10000;
    holdings={};
    trades=[];
 
-   save();
+   localStorage.removeItem("martinTrade");
    render();
  }
 }
@@ -283,6 +211,7 @@ function resetAccount(){
 load();
 render();
 
+setInterval(updatePrices,5000);
 </script>
 
 </body>
