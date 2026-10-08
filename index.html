@@ -4,16 +4,21 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Martin Trade</title>
+
 <style>
-body{font-family:Arial;margin:0;background:#f4f6f8;color:#172033}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial;background:#f4f6f8;color:#172033}
 header{background:#111827;color:white;padding:18px;text-align:center}
-main{max-width:700px;margin:auto;padding:15px}
-.card{background:white;padding:18px;margin:12px 0;border-radius:12px;box-shadow:0 2px 8px #ddd}
-input,select,button{width:100%;padding:12px;margin:6px 0;box-sizing:border-box;border-radius:7px;border:1px solid #ccc}
+main{max-width:750px;margin:auto;padding:14px}
+.card{background:white;padding:16px;margin:12px 0;border-radius:12px;box-shadow:0 2px 8px #ddd}
+input,select,button{width:100%;padding:12px;margin:6px 0;border-radius:7px;border:1px solid #ccc}
 button{border:0;color:white;font-weight:bold}
 .buy{background:#16a34a}.sell{background:#dc2626}.reset{background:#555}
-.stock{display:inline-block;width:44%;padding:8px}
-canvas{width:100%;height:250px;border:1px solid #ddd;border-radius:8px}
+.stock{display:inline-block;width:44%;padding:9px}
+.chartbox{position:relative}
+canvas{width:100%;height:300px;border:1px solid #ddd;border-radius:8px;background:#fff}
+.price{text-align:center;font-size:22px;font-weight:bold;margin:5px}
+.up{color:#16a34a}.down{color:#dc2626}
 </style>
 </head>
 
@@ -39,7 +44,8 @@ canvas{width:100%;height:250px;border:1px solid #ddd;border-radius:8px}
 </div>
 
 <div class="card">
-<h2>Price Chart</h2>
+<h2>Market Chart</h2>
+
 <select id="chartStock" onchange="drawChart()">
 <option>AAPL</option>
 <option>MSFT</option>
@@ -48,16 +54,29 @@ canvas{width:100%;height:250px;border:1px solid #ddd;border-radius:8px}
 <option>AMZN</option>
 <option>GOOGL</option>
 </select>
+
+<div id="chartPrice" class="price">$256.77</div>
+
+<div class="chartbox">
 <canvas id="chart"></canvas>
+</div>
+
 </div>
 
 <div class="card">
 <h2>Place Trade</h2>
+
 <select id="symbol">
-<option>AAPL</option><option>MSFT</option><option>NVDA</option>
-<option>TSLA</option><option>AMZN</option><option>GOOGL</option>
+<option>AAPL</option>
+<option>MSFT</option>
+<option>NVDA</option>
+<option>TSLA</option>
+<option>AMZN</option>
+<option>GOOGL</option>
 </select>
+
 <input id="shares" type="number" min="1" value="1">
+
 <button class="buy" onclick="trade('BUY')">BUY</button>
 <button class="sell" onclick="trade('SELL')">SELL</button>
 </div>
@@ -79,134 +98,316 @@ canvas{width:100%;height:250px;border:1px solid #ddd;border-radius:8px}
 </main>
 
 <script>
+
 let cash=10000;
+
 let prices={
- AAPL:256.77,MSFT:521.90,NVDA:180.24,
- TSLA:447.96,AMZN:232.11,GOOGL:246.85
+ AAPL:256.77,
+ MSFT:521.90,
+ NVDA:180.24,
+ TSLA:447.96,
+ AMZN:232.11,
+ GOOGL:246.85
 };
-let holdings={},trades={},history={};
 
-for(let s in prices)history[s]=[prices[s]];
+let holdings={};
+let trades=[];
+let history={};
 
-function money(n){return Number(n).toFixed(2)}
+for(let s in prices){
+ history[s]=[prices[s]];
+}
+
+function money(n){
+ return Number(n).toFixed(2);
+}
 
 function render(){
+
  document.getElementById("cash").textContent=money(cash);
 
  let value=0;
- for(let s in holdings)value+=holdings[s]*prices[s];
+
+ for(let s in holdings){
+   value+=holdings[s]*prices[s];
+ }
 
  let portfolio=cash+value;
+
  document.getElementById("portfolio").textContent=money(portfolio);
  document.getElementById("profit").textContent=money(portfolio-10000);
 
  let stocks="";
- for(let s in prices)
- stocks+=`<div class="stock"><b>${s}</b><br>$${money(prices[s])}</div>`;
+
+ for(let s in prices){
+   stocks+=`
+   <div class="stock">
+   <b>${s}</b><br>
+   $${money(prices[s])}
+   </div>`;
+ }
+
  document.getElementById("stocks").innerHTML=stocks;
 
  let p="";
- for(let s in holdings)p+=`${s}: ${holdings[s]} shares<br>`;
- document.getElementById("portfolioList").innerHTML=p||"No positions";
+
+ for(let s in holdings){
+   p+=`${s}: ${holdings[s]} shares<br>`;
+ }
+
+ document.getElementById("portfolioList").innerHTML=
+ p||"No positions";
 
  let h="";
+
  trades.slice().reverse().forEach(t=>{
    h+=`${t.action} ${t.shares} ${t.symbol} @ $${money(t.price)}<br>`;
  });
- document.getElementById("history").innerHTML=h||"No trades";
+
+ document.getElementById("history").innerHTML=
+ h||"No trades";
 
  save();
  drawChart();
 }
 
 function trade(action){
+
  let symbol=document.getElementById("symbol").value;
  let shares=Number(document.getElementById("shares").value);
  let price=prices[symbol];
 
- if(shares<1)return alert("Enter at least 1 share");
-
- if(action==="BUY"){
-   if(price*shares>cash)return alert("Not enough cash");
-   cash-=price*shares;
-   holdings[symbol]=(holdings[symbol]||0)+shares;
- }else{
-   if(!holdings[symbol]||holdings[symbol]<shares)
-   return alert("You don't own enough shares");
-   cash+=price*shares;
-   holdings[symbol]-=shares;
-   if(!holdings[symbol])delete holdings[symbol];
+ if(shares<1){
+   alert("Enter at least 1 share");
+   return;
  }
 
- trades.push({action,symbol,shares,price});
+ if(action==="BUY"){
+
+   if(price*shares>cash){
+     alert("Not enough cash");
+     return;
+   }
+
+   cash-=price*shares;
+   holdings[symbol]=(holdings[symbol]||0)+shares;
+
+ }else{
+
+   if(!holdings[symbol]||holdings[symbol]<shares){
+     alert("You don't own enough shares");
+     return;
+   }
+
+   cash+=price*shares;
+   holdings[symbol]-=shares;
+
+   if(holdings[symbol]===0){
+     delete holdings[symbol];
+   }
+ }
+
+ trades.push({
+   action:action,
+   symbol:symbol,
+   shares:shares,
+   price:price
+ });
+
  render();
 }
 
 function updatePrices(){
+
  for(let s in prices){
-   prices[s]=Math.max(1,prices[s]+(Math.random()-.5)*2);
+
+   let old=prices[s];
+
+   prices[s]=Math.max(
+     1,
+     prices[s]+(Math.random()-.5)*2
+   );
+
    history[s].push(prices[s]);
-   if(history[s].length>40)history[s].shift();
+
+   if(history[s].length>50){
+     history[s].shift();
+   }
  }
+
  render();
 }
 
 function drawChart(){
- let c=document.getElementById("chart"),x=c.getContext("2d");
- let s=document.getElementById("chartStock").value;
- let a=history[s];
 
- c.width=c.clientWidth;
- c.height=250;
+ let canvas=document.getElementById("chart");
+ let ctx=canvas.getContext("2d");
 
- x.clearRect(0,0,c.width,c.height);
+ let symbol=document.getElementById("chartStock").value;
+ let data=history[symbol];
 
- let min=Math.min(...a),max=Math.max(...a);
+ canvas.width=canvas.clientWidth*2;
+ canvas.height=300*2;
+
+ ctx.scale(2,2);
+
+ let w=canvas.clientWidth;
+ let h=300;
+
+ ctx.clearRect(0,0,w,h);
+
+ let min=Math.min(...data);
+ let max=Math.max(...data);
+
  let range=max-min||1;
 
- x.beginPath();
+ min-=range*.1;
+ max+=range*.1;
+ range=max-min;
 
- a.forEach((v,i)=>{
-   let px=i*(c.width/(a.length-1));
-   let py=c.height-20-((v-min)/range)*(c.height-40);
-   i?x.lineTo(px,py):x.moveTo(px,py);
+ let left=10;
+ let right=60;
+ let top=20;
+ let bottom=35;
+
+ let cw=w-left-right;
+ let ch=h-top-bottom;
+
+ /* Grid */
+
+ ctx.strokeStyle="#e5e7eb";
+ ctx.lineWidth=1;
+
+ for(let i=0;i<5;i++){
+
+   let y=top+(ch/4)*i;
+
+   ctx.beginPath();
+   ctx.moveTo(left,y);
+   ctx.lineTo(w-right,y);
+   ctx.stroke();
+
+   let price=max-(range/4)*i;
+
+   ctx.fillStyle="#6b7280";
+   ctx.font="11px Arial";
+   ctx.fillText("$"+money(price),w-right+5,y+4);
+ }
+
+ /* Bottom scale */
+
+ for(let i=0;i<5;i++){
+
+   let x=left+(cw/4)*i;
+
+   ctx.beginPath();
+   ctx.moveTo(x,top);
+   ctx.lineTo(x,h-bottom);
+   ctx.stroke();
+
+   ctx.fillStyle="#6b7280";
+   ctx.font="10px Arial";
+   ctx.fillText(i*10+"s",x-8,h-10);
+ }
+
+ /* Determine direction */
+
+ let rising=data[data.length-1]>=data[0];
+
+ ctx.strokeStyle=rising?"#16a34a":"#dc2626";
+ ctx.lineWidth=3;
+ ctx.beginPath();
+
+ data.forEach((v,i)=>{
+
+   let x=left+(i/(data.length-1||1))*cw;
+   let y=top+(max-v)/range*ch;
+
+   if(i===0)ctx.moveTo(x,y);
+   else ctx.lineTo(x,y);
  });
 
- x.strokeStyle="#2563eb";
- x.lineWidth=3;
- x.stroke();
+ ctx.stroke();
+
+ /* Current price */
+
+ let current=data[data.length-1];
+
+ let cy=top+(max-current)/range*ch;
+
+ ctx.strokeStyle=rising?"#16a34a":"#dc2626";
+ ctx.setLineDash([5,5]);
+ ctx.beginPath();
+ ctx.moveTo(left,cy);
+ ctx.lineTo(w-right,cy);
+ ctx.stroke();
+ ctx.setLineDash([]);
+
+ ctx.fillStyle=rising?"#16a34a":"#dc2626";
+ ctx.fillRect(w-right,cy-10,55,20);
+
+ ctx.fillStyle="white";
+ ctx.font="bold 11px Arial";
+ ctx.fillText("$"+money(current),w-right+4,cy+4);
+
+ let price=document.getElementById("chartPrice");
+ price.textContent="$"+money(current);
+ price.className="price "+(rising?"up":"down");
 }
 
 function save(){
- localStorage.setItem("martinTrade",
- JSON.stringify({cash,holdings,trades,prices,history}));
+
+ localStorage.setItem(
+ "martinTrade",
+ JSON.stringify({
+   cash:cash,
+   holdings:holdings,
+   trades:trades,
+   prices:prices,
+   history:history
+ })
+ );
 }
 
 function load(){
- let d=localStorage.getItem("martinTrade");
- if(d){
-   d=JSON.parse(d);
-   cash=d.cash;
-   holdings=d.holdings;
-   trades=d.trades||[];
-   prices=d.prices||prices;
-   history=d.history||history;
+
+ let data=localStorage.getItem("martinTrade");
+
+ if(data){
+
+   data=JSON.parse(data);
+
+   cash=data.cash;
+   holdings=data.holdings;
+   trades=data.trades||[];
+   prices=data.prices||prices;
+   history=data.history||history;
  }
 }
 
 function resetAccount(){
+
  if(confirm("Reset your account?")){
+
+   localStorage.removeItem("martinTrade");
+
    cash=10000;
    holdings={};
    trades=[];
-   localStorage.removeItem("martinTrade");
-   location.reload();
+
+   for(let s in prices){
+     history[s]=[prices[s]];
+   }
+
+   render();
  }
 }
 
 load();
 render();
+
 setInterval(updatePrices,5000);
+
 </script>
 
 </body>
