@@ -115,6 +115,31 @@ main{
   font-weight:bold;
 }
 
+.chart-title{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:10px;
+}
+
+.chart-title strong{
+  font-size:20px;
+}
+
+.chart-box{
+  width:100%;
+  height:260px;
+  border:1px solid #e5e7eb;
+  border-radius:10px;
+  overflow:hidden;
+  background:#fafafa;
+}
+
+canvas{
+  width:100%;
+  height:100%;
+}
+
 .trade-box{
   display:grid;
   grid-template-columns:1fr 100px 100px 100px;
@@ -179,6 +204,7 @@ th{
 }
 
 @media(max-width:700px){
+
   .dashboard{
     grid-template-columns:1fr;
   }
@@ -227,6 +253,7 @@ th{
   </div>
 
   <div class="section">
+
     <h2>Stocks</h2>
 
     <input
@@ -237,6 +264,24 @@ th{
     >
 
     <div id="stockList"></div>
+
+  </div>
+
+  <div class="section">
+
+    <div class="chart-title">
+      <strong id="chartSymbol">AAPL</strong>
+      <strong id="chartPrice">$255.00</strong>
+    </div>
+
+    <div class="chart-box">
+      <canvas id="priceChart"></canvas>
+    </div>
+
+    <p class="notice">
+      Simulated price chart. Prices update every 5 seconds.
+    </p>
+
   </div>
 
   <div class="section">
@@ -304,14 +349,28 @@ let start = 10000;
 let holdings = {};
 let trades = [];
 
+let selectedSymbol = "AAPL";
+
+let priceHistory = {
+  AAPL:[],
+  MSFT:[],
+  NVDA:[],
+  TSLA:[],
+  AMZN:[],
+  GOOGL:[]
+};
+
 function money(n){
   return "$" + Number(n).toFixed(2);
 }
 
 function renderStocks(){
 
-  const list = document.getElementById("stockList");
-  const search = document.getElementById("search").value.toLowerCase();
+  const list =
+    document.getElementById("stockList");
+
+  const search =
+    document.getElementById("search").value.toLowerCase();
 
   list.innerHTML = "";
 
@@ -322,7 +381,8 @@ function renderStocks(){
     )
     .forEach(s => {
 
-      const div = document.createElement("div");
+      const div =
+        document.createElement("div");
 
       div.className = "stock";
 
@@ -338,7 +398,14 @@ function renderStocks(){
       `;
 
       div.onclick = function(){
-        document.getElementById("symbol").value = s.symbol;
+
+        selectedSymbol = s.symbol;
+
+        document.getElementById("symbol").value =
+          s.symbol;
+
+        drawChart();
+
       };
 
       list.appendChild(div);
@@ -348,42 +415,63 @@ function renderStocks(){
 
 function setup(){
 
-  const select = document.getElementById("symbol");
+  const select =
+    document.getElementById("symbol");
 
   stocks.forEach(s => {
 
-    const option = document.createElement("option");
+    const option =
+      document.createElement("option");
 
     option.value = s.symbol;
+
     option.textContent = s.symbol;
 
     select.appendChild(option);
 
+    priceHistory[s.symbol].push(s.price);
+
   });
 
+  select.value = "AAPL";
+
+  select.onchange = function(){
+
+    selectedSymbol = this.value;
+
+    drawChart();
+
+  };
+
   renderStocks();
+
   render();
+
+  drawChart();
 
 }
 
 function trade(side){
 
-  const symbol = document.getElementById("symbol").value;
+  const symbol =
+    document.getElementById("symbol").value;
 
-  const shares = Number(
-    document.getElementById("shares").value
-  );
+  const shares =
+    Number(document.getElementById("shares").value);
 
-  const stock = stocks.find(
-    s => s.symbol === symbol
-  );
+  const stock =
+    stocks.find(s => s.symbol === symbol);
 
   if(!stock || shares <= 0){
+
     alert("Enter a valid number of shares.");
+
     return;
+
   }
 
-  const value = stock.price * shares;
+  const value =
+    stock.price * shares;
 
   if(side === "BUY"){
 
@@ -392,6 +480,7 @@ function trade(side){
       alert("Not enough virtual cash.");
 
       return;
+
     }
 
     cash -= value;
@@ -418,6 +507,7 @@ function trade(side){
       alert("You don't own enough shares.");
 
       return;
+
     }
 
     cash += value;
@@ -425,7 +515,9 @@ function trade(side){
     holdings[symbol] -= shares;
 
     if(holdings[symbol] <= 0){
+
       delete holdings[symbol];
+
     }
 
     trades.unshift({
@@ -450,7 +542,8 @@ function render(){
 
   let portfolioHTML = "";
 
-  const ownedSymbols = Object.keys(holdings);
+  const ownedSymbols =
+    Object.keys(holdings);
 
   if(ownedSymbols.length === 0){
 
@@ -476,9 +569,11 @@ function render(){
       const stock =
         stocks.find(s => s.symbol === symbol);
 
-      const shares = holdings[symbol];
+      const shares =
+        holdings[symbol];
 
-      const value = shares * stock.price;
+      const value =
+        shares * stock.price;
 
       portfolioValue += value;
 
@@ -497,7 +592,8 @@ function render(){
 
   }
 
-  const totalPL = portfolioValue - start;
+  const totalPL =
+    portfolioValue - start;
 
   document.getElementById("cash").textContent =
     money(cash);
@@ -506,7 +602,8 @@ function render(){
     money(portfolioValue);
 
   document.getElementById("totalPL").textContent =
-    (totalPL >= 0 ? "+" : "") + money(totalPL);
+    (totalPL >= 0 ? "+" : "") +
+    money(totalPL);
 
   document.getElementById("portfolio").innerHTML =
     portfolioHTML;
@@ -528,6 +625,7 @@ function renderHistory(){
       </p>`;
 
     return;
+
   }
 
   let html = `
@@ -570,22 +668,133 @@ function renderHistory(){
 
 }
 
+function drawChart(){
+
+  const canvas =
+    document.getElementById("priceChart");
+
+  const box =
+    canvas.parentElement;
+
+  const width =
+    box.clientWidth;
+
+  const height =
+    box.clientHeight;
+
+  const dpr =
+    window.devicePixelRatio || 1;
+
+  canvas.width =
+    width * dpr;
+
+  canvas.height =
+    height * dpr;
+
+  const ctx =
+    canvas.getContext("2d");
+
+  ctx.scale(dpr,dpr);
+
+  const data =
+    priceHistory[selectedSymbol];
+
+  if(!data || data.length < 2){
+
+    ctx.clearRect(0,0,width,height);
+
+    document.getElementById("chartSymbol").textContent =
+      selectedSymbol;
+
+    const stock =
+      stocks.find(s => s.symbol === selectedSymbol);
+
+    document.getElementById("chartPrice").textContent =
+      money(stock.price);
+
+    return;
+
+  }
+
+  ctx.clearRect(0,0,width,height);
+
+  const min =
+    Math.min(...data);
+
+  const max =
+    Math.max(...data);
+
+  const range =
+    Math.max(1,max-min);
+
+  const padding = 25;
+
+  ctx.beginPath();
+
+  data.forEach((price,index) => {
+
+    const x =
+      padding +
+      (index/(data.length-1)) *
+      (width-padding*2);
+
+    const y =
+      height-padding -
+      ((price-min)/range) *
+      (height-padding*2);
+
+    if(index === 0){
+      ctx.moveTo(x,y);
+    }else{
+      ctx.lineTo(x,y);
+    }
+
+  });
+
+  ctx.strokeWidth = 3;
+
+  ctx.stroke();
+
+  document.getElementById("chartSymbol").textContent =
+    selectedSymbol;
+
+  const stock =
+    stocks.find(s => s.symbol === selectedSymbol);
+
+  document.getElementById("chartPrice").textContent =
+    money(stock.price);
+
+}
+
 setInterval(function(){
 
   stocks.forEach(function(s){
 
     const change =
-      (Math.random() - 0.5) * 2;
+      (Math.random()-0.5)*2;
 
     s.price =
-      Math.max(1, s.price + change);
+      Math.max(1,s.price+change);
+
+    priceHistory[s.symbol].push(s.price);
+
+    if(priceHistory[s.symbol].length > 50){
+
+      priceHistory[s.symbol].shift();
+
+    }
 
   });
 
   renderStocks();
+
   render();
 
+  drawChart();
+
 },5000);
+
+window.addEventListener("resize",drawChart);
 
 setup();
 
