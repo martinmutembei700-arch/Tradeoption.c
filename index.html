@@ -2,48 +2,58 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Martin Trade</title>
+
+<script src="https://cdn.jsdelivr.net/npm/lightweight-charts@4.2.2/dist/lightweight-charts.standalone.production.js"></script>
 
 <style>
 *{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:#f1f5f9;color:#172033}
-header{background:#111827;color:white;padding:20px}
+body{margin:0;font-family:Arial,sans-serif;background:#0b1120;color:#e5e7eb}
+header{background:#111827;padding:18px}
 header h2{margin:0 0 6px}
-header p{margin:0;color:#cbd5e1}
-main{max-width:850px;margin:auto;padding:15px}
+header p{margin:0;color:#9ca3af}
+main{max-width:1100px;margin:auto;padding:15px}
 .cards{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
-.card,.panel{background:white;padding:16px;border-radius:12px;margin-bottom:14px;box-shadow:0 2px 8px #0000000a}
-.label{color:#64748b;font-size:13px}
-.value{font-size:23px;font-weight:bold;margin-top:8px}
-h3{margin-top:0}
+.card,.panel{background:#111827;border:1px solid #263244;border-radius:12px;padding:15px;margin-bottom:14px}
+.label{color:#9ca3af;font-size:13px}
+.value{font-size:22px;font-weight:bold;margin-top:8px;overflow-wrap:anywhere}
+h3{margin:0 0 15px}
 .markets{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
-.stock{border:1px solid #e2e8f0;border-radius:10px;padding:13px;cursor:pointer;background:white}
-.stock.selected{border:2px solid #2563eb;background:#eff6ff}
+.stock{padding:12px;border:1px solid #374151;border-radius:8px;cursor:pointer}
+.stock.selected{border:2px solid #3b82f6;background:#172554}
 .stock strong{display:block;margin-bottom:6px}
-.price{font-weight:bold}
+.stock small{color:#9ca3af}
+.price{font-size:17px;font-weight:bold;margin:7px 0}
 input,select,button{width:100%;padding:12px;margin-top:8px;border-radius:7px;font-size:15px}
-input,select{border:1px solid #cbd5e1;background:white}
+input,select{background:#0b1120;color:white;border:1px solid #374151}
 button{border:0;color:white;font-weight:bold;cursor:pointer}
+button:active{opacity:.75}
 .buy{background:#16a34a}
 .sell{background:#dc2626}
 .reset{background:#475569}
-button:active{opacity:.8}
-.row{display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid #e2e8f0}
-.good{color:#16a34a}
-.bad{color:#dc2626}
-#message{font-weight:bold;margin-top:12px}
-small{color:#64748b}
-@media(max-width:380px){.value{font-size:19px}}
+.trade-buttons{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+#chart{width:100%;height:360px}
+.chart-heading{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px}
+.chart-heading h3{margin:0}
+.chart-price{color:#60a5fa;font-weight:bold}
+.row{display:flex;justify-content:space-between;gap:10px;padding:12px 0;border-bottom:1px solid #263244}
+.good{color:#22c55e}
+.bad{color:#ef4444}
+#message{margin-top:12px;font-size:14px}
+small{color:#9ca3af}
+@media(min-width:650px){
+.cards{grid-template-columns:repeat(4,1fr)}
+.markets{grid-template-columns:repeat(3,1fr)}
+}
 </style>
 </head>
 
 <body>
-
 <header>
 <h2>Martin Trade</h2>
 <p>Paper Trading Simulator — Virtual Money Only</p>
-<p style="margin-top:10px">● Simulation Active</p>
+<p style="margin-top:10px;color:#22c55e">● Simulation Active</p>
 </header>
 
 <main>
@@ -53,17 +63,14 @@ small{color:#64748b}
 <div class="label">Available Cash</div>
 <div class="value" id="cash">$10,000.00</div>
 </div>
-
 <div class="card">
 <div class="label">Account Equity</div>
 <div class="value" id="equity">$10,000.00</div>
 </div>
-
 <div class="card">
 <div class="label">Total Profit / Loss</div>
 <div class="value" id="totalPL">$0.00</div>
 </div>
-
 <div class="card">
 <div class="label">Open Positions</div>
 <div class="value" id="positions">0</div>
@@ -76,50 +83,51 @@ small{color:#64748b}
 </div>
 
 <div class="panel">
-<h3>Place Trade</h3>
-
-<label for="symbol">Select Stock</label>
-<select id="symbol"></select>
-
-<div style="margin-top:12px">
-<strong id="tradeName">Apple Inc.</strong>
-<div class="value" id="tradePrice">$222.23</div>
+<div class="chart-heading">
+<h3 id="chartTitle">AAPL Candlestick Chart</h3>
+<span class="chart-price" id="chartPrice">$222.23</span>
+</div>
+<div id="chart"></div>
+<p><small>Simulated historical candles. Prices are not live market data.</small></p>
 </div>
 
+<div class="panel">
+<h3>Place Trade</h3>
+<label for="symbol">Select Stock</label>
+<select id="symbol"></select>
+<p><strong id="tradeName">Apple Inc.</strong></p>
+<div class="value" id="tradePrice">$222.23</div>
 <label for="quantity">Quantity (shares)</label>
 <input id="quantity" type="number" min="1" step="1" value="1">
-
-<div class="cards" style="margin-top:8px">
+<div class="trade-buttons">
 <button class="buy" id="buyBtn">BUY</button>
 <button class="sell" id="sellBtn">SELL</button>
 </div>
-
 <div id="message" role="status"></div>
 </div>
 
 <div class="panel">
 <h3>My Portfolio</h3>
-<div id="portfolio"></div>
+<div id="portfolio">No stocks owned yet.</div>
 </div>
 
 <div class="panel">
 <h3>Trade History</h3>
-<div id="history"></div>
+<div id="history">No trades yet.</div>
 </div>
 
 <div class="panel">
 <button class="reset" id="resetBtn">Reset Account</button>
-<small>Resetting permanently clears this browser's simulated account and trade history.</small>
+<small>Reset clears this browser's simulated account and trade history.</small>
 </div>
 
 <p style="text-align:center"><small>Simulation only. No real money or real stock orders.</small></p>
-
 </main>
 
 <script>
 (function(){
 
-const stocks = {
+const stocks={
  AAPL:{name:"Apple Inc.",price:222.23},
  MSFT:{name:"Microsoft Corp.",price:507.53},
  NVDA:{name:"NVIDIA Corp.",price:173.85},
@@ -128,107 +136,82 @@ const stocks = {
  GOOGL:{name:"Alphabet Inc.",price:260.05}
 };
 
-const STORAGE_KEY = "martinTradeAccount_v2";
-
+const KEY="martinTradeChartAccount_v1";
+let selected="AAPL";
 let account;
-let selected = "AAPL";
+let chart=null;
+let candleSeries=null;
+let resizeObserver=null;
 
-function newAccount(){
- return {
-  cash:10000,
-  holdings:{},
-  history:[],
-  realizedPL:0
- };
+function freshAccount(){
+ return {cash:10000,holdings:{},history:[],realizedPL:0};
 }
 
 function loadAccount(){
  try{
-  const saved = localStorage.getItem(STORAGE_KEY);
-  if(saved){
-   const parsed = JSON.parse(saved);
-   if(typeof parsed.cash === "number" &&
-      parsed.holdings && Array.isArray(parsed.history) &&
-      typeof parsed.realizedPL === "number"){
-    return parsed;
-   }
+  const data=JSON.parse(localStorage.getItem(KEY));
+  if(data && Number.isFinite(data.cash) &&
+     data.holdings && Array.isArray(data.history) &&
+     Number.isFinite(data.realizedPL)){
+   return data;
   }
  }catch(e){}
- return newAccount();
+ return freshAccount();
 }
 
-account = loadAccount();
+account=loadAccount();
 
 function save(){
  try{
-  localStorage.setItem(STORAGE_KEY,JSON.stringify(account));
+  localStorage.setItem(KEY,JSON.stringify(account));
  }catch(e){
-  showMessage("Unable to save account in this browser.",true);
+  message("Could not save account in this browser.",true);
  }
 }
 
 function money(n){
- return "$" + Number(n).toLocaleString("en-US",{
-  minimumFractionDigits:2,
-  maximumFractionDigits:2
+ return "$"+Number(n).toLocaleString("en-US",{
+  minimumFractionDigits:2,maximumFractionDigits:2
  });
 }
 
-function holdingCount(){
- return Object.values(account.holdings)
-  .filter(h=>h.qty>0).length;
-}
-
-function totalShares(){
- return Object.values(account.holdings)
-  .reduce((sum,h)=>sum+h.qty,0);
-}
-
-function marketValue(){
- return Object.entries(account.holdings).reduce((sum,[symbol,h])=>{
-  return sum + h.qty*stocks[symbol].price;
- },0);
-}
-
-function unrealizedPL(){
- return Object.entries(account.holdings).reduce((sum,[symbol,h])=>{
-  return sum+h.qty*(stocks[symbol].price-h.avg);
- },0);
-}
-
-function showMessage(message,error){
+function message(text,error){
  const el=document.getElementById("message");
- el.textContent=message;
+ el.textContent=text;
  el.className=error?"bad":"good";
 }
 
-function renderMarkets(){
- const markets=document.getElementById("markets");
- const select=document.getElementById("symbol");
+function marketValue(){
+ return Object.entries(account.holdings).reduce((sum,[s,h])=>
+  sum+h.qty*stocks[s].price,0);
+}
 
- markets.innerHTML="";
+function unrealizedPL(){
+ return Object.entries(account.holdings).reduce((sum,[s,h])=>
+  sum+h.qty*(stocks[s].price-h.avg),0);
+}
+
+function renderMarkets(){
+ const market=document.getElementById("markets");
+ const select=document.getElementById("symbol");
+ market.innerHTML="";
  select.innerHTML="";
 
  Object.entries(stocks).forEach(([symbol,s])=>{
-  const option=document.createElement("option");
-  option.value=symbol;
-  option.textContent=symbol+" — "+s.name;
-  select.appendChild(option);
+  const opt=document.createElement("option");
+  opt.value=symbol;
+  opt.textContent=symbol+" — "+s.name;
+  select.appendChild(opt);
 
-  const div=document.createElement("div");
-  div.className="stock"+(symbol===selected?" selected":"");
-  div.innerHTML=
-   "<strong>"+symbol+"</strong>"+
+  const box=document.createElement("div");
+  box.className="stock"+(symbol===selected?" selected":"");
+  box.innerHTML="<strong>"+symbol+"</strong>"+
    "<div>"+s.name+"</div>"+
-   '<p class="price">'+money(s.price)+'</p>'+
+   '<div class="price">'+money(s.price)+'</div>'+
    "<small>Simulated price</small>";
 
-  div.addEventListener("click",()=>{
-   selected=symbol;
-   update();
-  });
-
-  markets.appendChild(div);
+  box.addEventListener("click",()=>chooseStock(symbol));
+  market.appendChild(box);
  });
 
  select.value=selected;
@@ -236,33 +219,24 @@ function renderMarkets(){
 
 function renderPortfolio(){
  const el=document.getElementById("portfolio");
- const entries=Object.entries(account.holdings)
-  .filter(([symbol,h])=>h.qty>0);
+ el.innerHTML="";
+ const entries=Object.entries(account.holdings).filter(([s,h])=>h.qty>0);
 
- if(entries.length===0){
+ if(!entries.length){
   el.textContent="No stocks owned yet. Buy a stock to get started.";
   return;
  }
 
- el.innerHTML="";
-
- entries.forEach(([symbol,h])=>{
-  const value=h.qty*stocks[symbol].price;
-  const pl=h.qty*(stocks[symbol].price-h.avg);
+ entries.forEach(([s,h])=>{
+  const pl=h.qty*(stocks[s].price-h.avg);
   const row=document.createElement("div");
   row.className="row";
-
-  const left=document.createElement("div");
-  left.innerHTML="<strong>"+symbol+"</strong><br>"+
-   "<small>"+h.qty+" shares · Average cost "+money(h.avg)+"</small>";
-
-  const right=document.createElement("div");
-  right.style.textAlign="right";
-  right.innerHTML="<strong>"+money(value)+"</strong><br>"+
-   '<small class="'+(pl>=0?"good":"bad")+'">'+
-   (pl>=0?"+":"")+money(pl)+"</small>";
-
-  row.append(left,right);
+  row.innerHTML="<div><strong>"+s+"</strong><br><small>"+
+   h.qty+" shares · Average cost "+money(h.avg)+
+   "</small></div><div style='text-align:right'><strong>"+
+   money(h.qty*stocks[s].price)+"</strong><br><small class='"+
+   (pl>=0?"good":"bad")+"'>"+(pl>=0?"+":"")+money(pl)+
+   "</small></div>";
   el.appendChild(row);
  });
 }
@@ -270,21 +244,19 @@ function renderPortfolio(){
 function renderHistory(){
  const el=document.getElementById("history");
  el.innerHTML="";
-
- if(account.history.length===0){
+ if(!account.history.length){
   el.textContent="No trades yet.";
   return;
  }
 
- account.history.slice(0,20).forEach(t=>{
+ account.history.slice(0,30).forEach(t=>{
   const row=document.createElement("div");
   row.className="row";
-  row.innerHTML=
-   "<div><strong>"+t.action+" "+t.symbol+"</strong><br>"+
-   "<small>"+t.time+" · "+t.qty+" shares</small></div>"+
-   "<div style='text-align:right'><strong>"+
-   money(t.total)+"</strong><br><small>"+
-   money(t.price)+" per share</small></div>";
+  row.innerHTML="<div><strong>"+t.action+" "+t.symbol+
+   "</strong><br><small>"+t.time+" · "+t.qty+
+   " shares</small></div><div style='text-align:right'><strong>"+
+   money(t.total)+"</strong><br><small>"+money(t.price)+
+   " per share</small></div>";
   el.appendChild(row);
  });
 }
@@ -293,8 +265,7 @@ function update(){
  renderMarkets();
 
  document.getElementById("cash").textContent=money(account.cash);
- document.getElementById("equity").textContent=
-  money(account.cash+marketValue());
+ document.getElementById("equity").textContent=money(account.cash+marketValue());
 
  const pl=account.realizedPL+unrealizedPL();
  const plEl=document.getElementById("totalPL");
@@ -302,15 +273,134 @@ function update(){
  plEl.className="value "+(pl>=0?"good":"bad");
 
  document.getElementById("positions").textContent=
-  holdingCount()+" ("+totalShares()+" shares)";
+  Object.values(account.holdings).filter(h=>h.qty>0).length;
 
- document.getElementById("tradeName").textContent=
-  stocks[selected].name;
- document.getElementById("tradePrice").textContent=
-  money(stocks[selected].price);
+ document.getElementById("tradeName").textContent=stocks[selected].name;
+ document.getElementById("tradePrice").textContent=money(stocks[selected].price);
 
  renderPortfolio();
  renderHistory();
+}
+
+function generateCandles(symbol){
+ const base=stocks[symbol].price;
+ const candles=[];
+ let previous=base*0.96;
+ const now=Math.floor(Date.now()/1000);
+ const interval=3600;
+ const start=now-79*interval;
+
+ // Deterministic sample candles for this stock.
+ let seed=0;
+ for(let i=0;i<symbol.length;i++){
+  seed=(seed*31+symbol.charCodeAt(i))>>>0;
+ }
+
+ function random(){
+  seed=(1664525*seed+1013904223)>>>0;
+  return seed/4294967296;
+ }
+
+ for(let i=0;i<80;i++){
+  const open=previous;
+  const change=(random()-0.48)*base*0.012;
+  const close=Math.max(0.01,open+change);
+  const high=Math.max(open,close)+random()*base*0.004;
+  const low=Math.max(0.01,Math.min(open,close)-random()*base*0.004);
+
+  candles.push({
+   time:start+i*interval,
+   open:Number(open.toFixed(2)),
+   high:Number(high.toFixed(2)),
+   low:Number(low.toFixed(2)),
+   close:Number(close.toFixed(2))
+  });
+
+  previous=close;
+ }
+
+ // Anchor the final candle to the displayed simulated price.
+ const last=candles[candles.length-1];
+ const shift=base-last.close;
+
+ candles.forEach(c=>{
+  c.open=Number((c.open+shift).toFixed(2));
+  c.high=Number((c.high+shift).toFixed(2));
+  c.low=Number(Math.max(0.01,c.low+shift).toFixed(2));
+  c.close=Number((c.close+shift).toFixed(2));
+ });
+
+ last.close=base;
+ last.high=Number(Math.max(last.high,base,last.open).toFixed(2));
+ last.low=Number(Math.min(last.low,base,last.open).toFixed(2));
+
+ return candles;
+}
+
+function initChart(){
+ const el=document.getElementById("chart");
+
+ if(!window.LightweightCharts){
+  el.innerHTML="<p>Chart library could not load. Check your internet connection and refresh.</p>";
+  return;
+ }
+
+ chart=LightweightCharts.createChart(el,{
+  width:el.clientWidth,
+  height:360,
+  layout:{
+   background:{color:"#111827"},
+   textColor:"#9ca3af"
+  },
+  grid:{
+   vertLines:{color:"#263244"},
+   horzLines:{color:"#263244"}
+  },
+  rightPriceScale:{borderColor:"#374151"},
+  timeScale:{
+   borderColor:"#374151",
+   timeVisible:true,
+   secondsVisible:false
+  },
+  crosshair:{mode:LightweightCharts.CrosshairMode.Normal}
+ });
+
+ candleSeries=chart.addCandlestickSeries({
+  upColor:"#22c55e",
+  downColor:"#ef4444",
+  borderUpColor:"#22c55e",
+  borderDownColor:"#ef4444",
+  wickUpColor:"#22c55e",
+  wickDownColor:"#ef4444"
+ });
+
+ resizeObserver=new ResizeObserver(entries=>{
+  if(chart){
+   const width=entries[0].contentRect.width;
+   if(width>0) chart.applyOptions({width:width});
+  }
+ });
+
+ resizeObserver.observe(el);
+ renderChart();
+}
+
+function renderChart(){
+ document.getElementById("chartTitle").textContent=
+  selected+" Candlestick Chart";
+ document.getElementById("chartPrice").textContent=money(stocks[selected].price);
+
+ if(!chart||!candleSeries)return;
+
+ candleSeries.setData(generateCandles(selected));
+ chart.timeScale().fitContent();
+}
+
+function chooseStock(symbol){
+ selected=symbol;
+ document.getElementById("symbol").value=symbol;
+ update();
+ renderChart();
 }
 
 function trade(action){
@@ -319,93 +409,79 @@ function trade(action){
  const total=qty*price;
 
  if(!Number.isSafeInteger(qty)||qty<1){
-  showMessage("Enter a whole number of shares.",true);
+  message("Enter a whole number of shares.",true);
   return;
  }
 
  if(!Number.isFinite(total)){
-  showMessage("Invalid trade quantity.",true);
+  message("Invalid quantity.",true);
   return;
  }
 
  if(action==="BUY"){
   if(total>account.cash+0.000001){
-   showMessage("Insufficient cash for this purchase.",true);
+   message("Insufficient cash.",true);
    return;
   }
 
-  const old=account.holdings[selected]||{qty:0,avg:0};
-  const newQty=old.qty+qty;
-
-  old.avg=((old.qty*old.avg)+total)/newQty;
-  old.qty=newQty;
-  account.holdings[selected]=old;
+  const h=account.holdings[selected]||{qty:0,avg:0};
+  const newQty=h.qty+qty;
+  h.avg=(h.qty*h.avg+total)/newQty;
+  h.qty=newQty;
+  account.holdings[selected]=h;
   account.cash-=total;
 
  }else{
-  const old=account.holdings[selected];
+  const h=account.holdings[selected];
 
-  if(!old||old.qty<qty){
-   showMessage("You do not own enough shares to sell.",true);
+  if(!h||h.qty<qty){
+   message("You do not own enough shares to sell.",true);
    return;
   }
 
   account.cash+=total;
-  account.realizedPL+=qty*(price-old.avg);
-  old.qty-=qty;
+  account.realizedPL+=qty*(price-h.avg);
+  h.qty-=qty;
 
-  if(old.qty===0){
-   delete account.holdings[selected];
-  }
+  if(h.qty===0) delete account.holdings[selected];
  }
 
  account.history.unshift({
-  action,
+  action:action,
   symbol:selected,
-  qty,
-  price,
-  total,
+  qty:qty,
+  price:price,
+  total:total,
   time:new Date().toLocaleString()
  });
 
  account.history=account.history.slice(0,100);
-
  save();
  update();
-
- showMessage(
-  action+" successful: "+qty+" "+selected+
-  " share(s) at "+money(price)+".",
-  false
- );
+ message(action+" successful: "+qty+" "+selected+
+  " share(s) at "+money(price)+".",false);
 }
 
 document.getElementById("symbol").addEventListener("change",e=>{
- selected=e.target.value;
- update();
+ chooseStock(e.target.value);
 });
 
-document.getElementById("buyBtn").addEventListener("click",()=>{
- trade("BUY");
-});
-
-document.getElementById("sellBtn").addEventListener("click",()=>{
- trade("SELL");
-});
+document.getElementById("buyBtn").addEventListener("click",()=>trade("BUY"));
+document.getElementById("sellBtn").addEventListener("click",()=>trade("SELL"));
 
 document.getElementById("resetBtn").addEventListener("click",()=>{
- if(confirm("Reset your account to $10,000 and erase all simulated trades?")){
-  account=newAccount();
+ if(confirm("Reset account to $10,000 and erase all trades?")){
+  account=freshAccount();
   save();
-  showMessage("Account reset successfully.",false);
   update();
+  message("Account reset successfully.",false);
  }
 });
 
 update();
+initChart();
 
 })();
 </script>
-
 </body>
-  </html>
+</html>
