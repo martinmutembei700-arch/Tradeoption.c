@@ -1,52 +1,103 @@
-const express = require("express");
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BQ Binary Trading</title>
+<style>
+body{margin:0;background:#0b1220;color:white;font-family:Arial;text-align:center}
+header{background:#17243a;padding:20px;font-size:25px;font-weight:bold;color:#20d6a0}
+.card{background:#17243a;margin:15px auto;padding:20px;border-radius:12px;max-width:420px}
+button,select,input{padding:13px;margin:6px;border:0;border-radius:7px;font-size:16px}
+input,select{width:85%;background:#0b1220;color:white;border:1px solid #445}
+button{width:40%;font-weight:bold;cursor:pointer}
+.up{background:#20d6a0}.down{background:#ff526b;color:white}
+.price{font-size:30px;font-weight:bold}
+.small{color:#b7c4d8;font-size:13px}
+</style>
+</head>
+<body>
+<header>BQ BINARY TRADING</header>
 
-const app = express();
-const PORT = process.env.PORT || 3000;
+<div class="card">
+<div class="small">DEMO ACCOUNT · VIRTUAL MONEY ONLY</div>
+<h3>Available Balance</h3>
+<div class="price" id="balance">$10,000.00</div>
+</div>
 
-app.get("/", (req, res) => {
-res.send("Martin Trade market data server is running!");
-});
+<div class="card">
+<h3>Market</h3>
+<select id="asset">
+<option>EUR/USD</option>
+<option>GBP/USD</option>
+<option>Bitcoin</option>
+<option>Gold</option>
+</select>
+<p class="small">Simulated market price</p>
+<div class="price" id="price">1.08420</div>
+<h3>Trade Amount ($)</h3>
+<input id="amount" type="number" value="10" min="1">
+<h3>Duration</h3>
+<select id="duration">
+<option value="10">10 seconds (test)</option>
+<option value="30">30 seconds</option>
+<option value="60">1 minute</option>
+</select>
+<p>Potential profit: <b id="profit">$8.00</b></p>
+<button class="up" onclick="trade('UP')">▲ UP</button>
+<button class="down" onclick="trade('DOWN')">▼ DOWN</button>
+<h3 id="message">Ready to trade</h3>
+<p id="timer"></p>
+</div>
 
-app.get("/api/quote/:symbol", async (req, res) => {
-const token = process.env.FINNHUB_API_KEY;
-const symbol = req.params.symbol.toUpperCase();
+<div class="card">
+<h3>Trade History</h3>
+<div id="history">No trades yet</div>
+</div>
 
-const allowedSymbols = [
-"AAPL", "MSFT", "NVDA",
-"TSLA", "AMZN", "GOOGL"
-];
+<p class="small">Simulation only. No real money or live market prices.</p>
 
-if (!allowedSymbols.includes(symbol)) {
-return res.status(400).json({ error: "Unsupported stock symbol" });
+<script>
+let balance=10000;
+let price=1.08420;
+let busy=false;
+const startPrices={"EUR/USD":1.08420,"GBP/USD":1.27150,"Bitcoin":67450,"Gold":2325};
+const el=id=>document.getElementById(id);
+function money(n){return "$"+n.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2})}
+function show(){el("balance").textContent=money(balance)}
+function movePrice(){
+ let a=el("asset").value;
+ let step=a==="Bitcoin"?100:a==="Gold"?3:0.00015;
+ price+= (Math.random()-.5)*step;
+ el("price").textContent=price.toFixed(a==="Bitcoin"||a==="Gold"?2:5);
 }
-
-if (!token) {
-return res.status(500).json({ error: "Market data API key is not configured" });
+el("asset").onchange=()=>{price=startPrices[el("asset").value];el("price").textContent=price.toFixed(el("asset").value==="Bitcoin"||el("asset").value==="Gold"?2:5)};
+el("amount").oninput=()=>{el("profit").textContent=money(Math.max(0,Number(el("amount").value)||0)*.8)};
+function trade(side){
+ if(busy){el("message").textContent="Wait for this trade to finish.";return}
+ let amount=Number(el("amount").value),duration=Number(el("duration").value);
+ if(!Number.isFinite(amount)||amount<1||amount>balance){el("message").textContent="Enter a valid amount within your balance.";return}
+ busy=true;balance-=amount;show();
+ let entry=price,remaining=duration;
+ el("message").textContent=side+" trade opened";
+ el("timer").textContent="Time left: "+remaining+" seconds";
+ let clock=setInterval(()=>{
+  remaining--;el("timer").textContent="Time left: "+remaining+" seconds";
+  if(remaining<=0){
+   clearInterval(clock);
+   let won=side==="UP"?price>entry:price<entry;
+   let result=won?"WIN":"LOSS";
+   if(won)balance+=amount*1.8;
+   show();busy=false;
+   el("message").textContent=result+(won?" — profit "+money(amount*.8):" — stake lost");
+   el("timer").textContent="Entry: "+entry.toFixed(5)+" · Exit: "+price.toFixed(5);
+   if(el("history").textContent==="No trades yet")el("history").textContent="";
+   el("history").innerHTML="<p>"+side+" · "+result+" · "+money(amount)+"</p>"+el("history").innerHTML;
+  }
+ },1000);
 }
-
-try {
-const url = "https://finnhub.io/api/v1/quote?symbol=${symbol}&token=${token}";
-const response = await fetch(url);
-const data = await response.json();
-
-if (!response.ok || !data.c) {
-  return res.status(502).json({ error: "Market quote unavailable" });
-}
-
-res.json({
-  symbol,
-  price: data.c,
-  previousClose: data.pc,
-  change: data.d,
-  percentChange: data.dp,
-  timestamp: data.t
-});
-
-} catch (error) {
-res.status(500).json({ error: "Unable to retrieve market data" });
-}
-});
-
-app.listen(PORT, () => {
-console.log("Martin Trade server running on port ${PORT}");
-});
+setInterval(movePrice,1000);
+show();
+</script>
+</body>
+</html>
